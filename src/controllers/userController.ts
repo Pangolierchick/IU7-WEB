@@ -1,16 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { matchedData, validationResult } from "express-validator";
-import { AccountModel } from "../models/accountModel";
+import { userModel } from "../models/userModel";
 import { UserRepository } from "../repositories/userRepository";
 import { BaseController } from "./baseController";
 
 export class UserController extends BaseController {
-  private _userManager: AccountModel;
+  private _userManager: userModel;
   constructor(prisma: PrismaClient) {
     super(prisma);
     const _userRepo = new UserRepository(this._prisma);
-    this._userManager = new AccountModel(_userRepo);
+    this._userManager = new userModel(_userRepo);
   }
   public async signup(req: Request, res: Response) {
     const result = validationResult(req);
@@ -64,27 +64,6 @@ export class UserController extends BaseController {
         });
       } catch (e) {
         res.status(404).json({ errors: (e as Error).message });
-      }
-    } else {
-      res.status(400).json({ errors: result.array() });
-    }
-  }
-
-  public async checkUser(req: Request, res: Response) {
-    const result = validationResult(req);
-
-    if (result.isEmpty()) {
-      const { login, password } = matchedData(req);
-
-      try {
-        const isExists = await this._userManager.getByLoginAndPassword(
-          login,
-          password
-        );
-
-        res.status(200).json({ success: isExists });
-      } catch (e) {
-        res.status(500).json({ errors: (e as Error).message });
       }
     } else {
       res.status(400).json({ errors: result.array() });

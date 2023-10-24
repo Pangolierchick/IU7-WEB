@@ -17,7 +17,7 @@ const verifyToken = (token: string, secret: string) => {
 };
 
 const signToken = (
-  payload: any,
+  payload: string | object | Buffer,
   secret: jwt.Secret,
   options: jwt.SignOptions
 ) => {
@@ -63,7 +63,7 @@ class UserBuilder {
   }
 }
 
-export class AccountModel {
+export class userModel {
   private _userRepository: IUserRepository;
 
   constructor(userRepo: IUserRepository) {

@@ -1,17 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { matchedData, validationResult } from "express-validator";
-import { AccountManager } from "../models/accountManager";
-import { AdvertisementManager } from "../models/advertisementManager";
+import { AdvertisementModel } from "../models/advertisementModel";
+import { userModel } from "../models/userModel";
 import { AdvertisementRepository } from "../repositories/advertisimentRepository";
 import { RentRepository } from "../repositories/rentRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { BaseController } from "./baseController";
-import { AccountModel } from "../models/accountModel";
-import { AdvertisementModel } from "../models/advertisementModel";
 
 class ListingController extends BaseController {
-  private _userManager: AccountModel;
+  private _userManager: userModel;
   private _advManager: AdvertisementModel;
 
   constructor(prisma: PrismaClient) {
@@ -21,8 +19,8 @@ class ListingController extends BaseController {
     const _rentRepo = new RentRepository(prisma);
     const _userRepo = new UserRepository(prisma);
 
-    this._advManager = new AdvertisementManager(_advRepo, _userRepo, _rentRepo);
-    this._userManager = new AccountManager(_userRepo);
+    this._advManager = new AdvertisementModel(_advRepo, _userRepo, _rentRepo);
+    this._userManager = new userModel(_userRepo);
   }
 
   public async getAdvertisement(req: Request, res: Response) {
@@ -115,7 +113,7 @@ class ListingController extends BaseController {
       const adminId = req.body.userId;
 
       try {
-        const r = await this._advManager.approveAd(adId, adminId);
+        await this._advManager.approveAd(adId, adminId);
         res.status(200).json({ result: "success" });
       } catch (e) {
         res.status(500).json({ errors: (e as Error).message });

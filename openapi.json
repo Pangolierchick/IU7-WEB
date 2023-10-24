@@ -233,6 +233,30 @@
         }
       }
     },
+    "/api/v1/user/validateToken": {
+      "get": {
+        "summary": "Validate user token",
+        "tags": ["User"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token is valid"
+          },
+          "401": {
+            "description": "Invalid token"
+          }
+        }
+      }
+    },
 
     "/api/v1/listing/createAdvertisement": {
       "post": {

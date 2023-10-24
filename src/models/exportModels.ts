@@ -1,2 +1,2 @@
-export * from "./accountModel";
 export * from "./advertisementModel";
+export * from "./userModel";

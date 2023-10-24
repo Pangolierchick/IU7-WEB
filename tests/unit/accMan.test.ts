@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { UserRole } from "../../src/interfaces/IUser";
-import { AccountModel } from "../../src/models/accountModel";
+import { userModel } from "../../src/models/userModel";
 import { DataMock } from "../mocks/dataMock";
 import { UserMock } from "../mocks/userMock";
 
 let userRepo: UserMock;
-let accountManager: AccountModel;
+let accountManager: userModel;
 
 describe("Unit tests of accountManager", () => {
   beforeEach(() => {
     userRepo = new UserMock(DataMock.users());
-    accountManager = new AccountModel(userRepo);
+    accountManager = new userModel(userRepo);
   });
 
   it("check existing user", async () => {

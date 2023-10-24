@@ -1,9 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { describe, expect, it } from "vitest";
-import {
-  AccountModel,
-  AdvertisementModel,
-} from "../../src/models/exportModels";
+import { AdvertisementModel, userModel } from "../../src/models/exportModels";
 import {
   AdvertisementRepository,
   RentRepository,
@@ -17,7 +14,7 @@ const userRepo = new UserRepository(prisma);
 const advRepo = new AdvertisementRepository(prisma);
 
 const adManager = new AdvertisementModel(advRepo, userRepo, rentRepo);
-const accManager = new AccountModel(userRepo);
+const accManager = new userModel(userRepo);
 
 describe("Database integration tests", () => {
   it("test #1", async () => {
