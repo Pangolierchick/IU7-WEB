@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { AccountManager } from "../models/accountManager";
+import { AccountModel } from "../models/accountModel";
 import { UserRepository } from "../repositories/userRepository";
 
 export class AuthenticateMiddleware {
-  private _userManager: AccountManager;
+  private _userManager: AccountModel;
   constructor(prisma: PrismaClient) {
     const accRepo = new UserRepository(prisma);
-    this._userManager = new AccountManager(accRepo);
+    this._userManager = new AccountModel(accRepo);
   }
 
   public async authenticateMiddleware(

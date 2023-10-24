@@ -1,16 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { matchedData, validationResult } from "express-validator";
-import { AccountManager } from "../models/accountManager";
+import { AccountModel } from "../models/accountModel";
 import { UserRepository } from "../repositories/userRepository";
 import { BaseController } from "./baseController";
 
 export class UserController extends BaseController {
-  private _userManager: AccountManager;
+  private _userManager: AccountModel;
   constructor(prisma: PrismaClient) {
     super(prisma);
     const _userRepo = new UserRepository(this._prisma);
-    this._userManager = new AccountManager(_userRepo);
+    this._userManager = new AccountModel(_userRepo);
   }
   public async signup(req: Request, res: Response) {
     const result = validationResult(req);

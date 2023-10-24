@@ -7,10 +7,12 @@ import { AdvertisementRepository } from "../repositories/advertisimentRepository
 import { RentRepository } from "../repositories/rentRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { BaseController } from "./baseController";
+import { AccountModel } from "../models/accountModel";
+import { AdvertisementModel } from "../models/advertisementModel";
 
 class ListingController extends BaseController {
-  private _userManager: AccountManager;
-  private _advManager: AdvertisementManager;
+  private _userManager: AccountModel;
+  private _advManager: AdvertisementModel;
 
   constructor(prisma: PrismaClient) {
     super(prisma);

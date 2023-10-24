@@ -63,7 +63,7 @@ class UserBuilder {
   }
 }
 
-export class AccountManager {
+export class AccountModel {
   private _userRepository: IUserRepository;
 
   constructor(userRepo: IUserRepository) {

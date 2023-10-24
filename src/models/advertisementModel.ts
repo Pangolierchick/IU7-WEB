@@ -13,7 +13,7 @@ type AdvertisementToBeApproved = {
   ownerId: string;
 };
 
-export class AdvertisementManager {
+export class AdvertisementModel {
   private _advertisimentRepository: IAdvertisementRepository;
 
   private _userRepository: IUserRepository;
