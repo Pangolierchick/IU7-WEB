@@ -1,8 +1,8 @@
-import { assert, beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { UserRole } from "../../src/interfaces/IUser";
+import { AccountManager } from "../../src/models/accountManager";
 import { DataMock } from "../mocks/dataMock";
 import { UserMock } from "../mocks/userMock";
-import { AccountManager } from "../../src/managers/accountManager";
-import { UserRole } from "../../src/interfaces/IUser";
 
 let userRepo: UserMock;
 let accountManager: AccountManager;

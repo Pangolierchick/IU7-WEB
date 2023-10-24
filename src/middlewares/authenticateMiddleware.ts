@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { AccountManager } from "../managers/accountManager";
+import { AccountManager } from "../models/accountManager";
 import { UserRepository } from "../repositories/userRepository";
 
 export class AuthenticateMiddleware {

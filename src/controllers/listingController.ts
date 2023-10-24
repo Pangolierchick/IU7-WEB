@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { matchedData, validationResult } from "express-validator";
-import { AccountManager } from "../managers/accountManager";
-import { AdvertisementManager } from "../managers/advertisementManager";
+import { AccountManager } from "../models/accountManager";
+import { AdvertisementManager } from "../models/advertisementManager";
 import { AdvertisementRepository } from "../repositories/advertisimentRepository";
 import { RentRepository } from "../repositories/rentRepository";
 import { UserRepository } from "../repositories/userRepository";

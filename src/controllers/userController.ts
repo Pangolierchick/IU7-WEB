@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { matchedData, validationResult } from "express-validator";
-import { AccountManager } from "../managers/accountManager";
+import { AccountManager } from "../models/accountManager";
 import { UserRepository } from "../repositories/userRepository";
 import { BaseController } from "./baseController";
 

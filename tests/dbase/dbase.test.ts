@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   AccountManager,
   AdvertisementManager,
-} from "../../src/managers/exportManagers";
+} from "../../src/models/exportManagers";
 import {
   AdvertisementRepository,
   RentRepository,
