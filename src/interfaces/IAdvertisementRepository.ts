@@ -6,7 +6,7 @@ export interface IAdvertisementRepository extends IRepository<IAdvertisement> {
   updateDescription(id: string, descr: string): Promise<void>;
   updatePrice(id: string, price: number): Promise<void>;
   approve(id: string): Promise<void>;
-  getUsersAdvertisiments(userId: string): Promise<IAdvertisement[]>;
+  getUsersAdvertisements(userId: string): Promise<IAdvertisement[]>;
   getAllWithOwner(): Promise<IAdvertisementWithOwner[]>;
   getWithOwner(id: string): Promise<IAdvertisementWithOwner | null>;
 }

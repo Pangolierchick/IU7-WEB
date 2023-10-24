@@ -12,7 +12,7 @@ const authMiddleware = new AuthenticateMiddleware(prisma);
 feedbackRouter.get(
   "/adFeedbacks",
   query("adId").isUUID(),
-  feedbackController.getAdvertisimentsFeedbacks.bind(feedbackController)
+  feedbackController.getAdvertisementsFeedbacks.bind(feedbackController)
 );
 
 feedbackRouter.delete(

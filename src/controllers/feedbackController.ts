@@ -15,14 +15,14 @@ class FeedbackController extends BaseController {
     this._feedbackManager = new FeedbackManager(feedbackRepo);
   }
 
-  async getAdvertisimentsFeedbacks(req: Request, res: Response) {
+  async getAdvertisementsFeedbacks(req: Request, res: Response) {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
       const { adId } = matchedData(req);
 
       try {
-        const feedbacks = await this._feedbackManager.getAdvertisimentFeedbacks(
+        const feedbacks = await this._feedbackManager.getAdvertisementFeedbacks(
           adId
         );
 

@@ -6,7 +6,7 @@ import { IRentRepository } from "../interfaces/IRentRepository";
 import { INITIAL_SCORE, UserRole } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
 
-type AdvertisimentToBeApproved = {
+type AdvertisementToBeApproved = {
   description: string;
   cost: number;
   address: string;
@@ -30,25 +30,25 @@ export class AdvertisementManager {
     this._rentRepository = rentRepo;
   }
 
-  public async getAdvertisiment(adId: string) {
+  public async getAdvertisement(adId: string) {
     const ad = await this._advertisimentRepository.get(adId);
 
     if (!ad) {
-      throw new Error(`Advertisiment with id ${adId} was not found`);
+      throw new Error(`Advertisement with id ${adId} was not found`);
     }
 
     return ad;
   }
 
-  public async createAdvertisiment(data: AdvertisimentToBeApproved) {
-    const adv = AdvertisimentBuilder.buildAdvertisiment(data);
+  public async createAdvertisement(data: AdvertisementToBeApproved) {
+    const adv = AdvertisementBuilder.buildAdvertisement(data);
     await this._advertisimentRepository.create(adv);
 
     return adv.id;
   }
 
-  public async getUsersAdvertisiments(userId: string) {
-    const ads = await this._advertisimentRepository.getUsersAdvertisiments(
+  public async getUsersAdvertisements(userId: string) {
+    const ads = await this._advertisimentRepository.getUsersAdvertisements(
       userId
     );
 
@@ -97,14 +97,14 @@ export class AdvertisementManager {
     return rent.id;
   }
 
-  public async addAdvertisiment(ad: AdvertisimentToBeApproved) {
+  public async addAdvertisement(ad: AdvertisementToBeApproved) {
     const user = await this._userRepository.get(ad.ownerId);
 
     if (user === null) {
       throw new Error(`User ${ad.ownerId} doesn't exist`);
     }
 
-    const _ad = AdvertisimentBuilder.buildAdvertisiment(ad);
+    const _ad = AdvertisementBuilder.buildAdvertisement(ad);
     await this._advertisimentRepository.create(_ad);
     return _ad.id;
   }
@@ -150,7 +150,7 @@ export class AdvertisementManager {
     }
   }
 
-  public async searchAdvertisiments(needle: string) {
+  public async searchAdvertisements(needle: string) {
     const ads = await this._advertisimentRepository.getAllWithOwner();
 
     if (needle) {
@@ -168,18 +168,18 @@ export class AdvertisementManager {
     return ads.filter((x) => x.isApproved);
   }
 
-  public async getAdvertisimentWithOwner(id: string) {
+  public async getAdvertisementWithOwner(id: string) {
     const ad = await this._advertisimentRepository.getWithOwner(id);
 
     if (!ad) {
-      throw new Error(`Advertisiment with id ${id} was not found`);
+      throw new Error(`Advertisement with id ${id} was not found`);
     }
 
     return ad;
   }
 
-  public async getAdvertisimentsRentDates(id: string) {
-    const rents = await this._rentRepository.getAdvertisimentRents(id);
+  public async getAdvertisementsRentDates(id: string) {
+    const rents = await this._rentRepository.getAdvertisementRents(id);
     const dates: string[] = [];
 
     rents.forEach((r) => {
@@ -216,9 +216,9 @@ class RentBuilder {
   }
 }
 
-class AdvertisimentBuilder {
-  public static buildAdvertisiment(
-    ad: AdvertisimentToBeApproved
+class AdvertisementBuilder {
+  public static buildAdvertisement(
+    ad: AdvertisementToBeApproved
   ): IAdvertisement {
     return {
       id: uuidv4(),

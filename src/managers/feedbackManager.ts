@@ -35,8 +35,8 @@ export class FeedbackManager {
     await this._feedbackRepo.delete(id);
   }
 
-  public async getAdvertisimentFeedbacks(adId: string) {
-    return await this._feedbackRepo.getAdvertisimentFeedbacks(adId);
+  public async getAdvertisementFeedbacks(adId: string) {
+    return await this._feedbackRepo.getAdvertisementFeedbacks(adId);
   }
 }
 

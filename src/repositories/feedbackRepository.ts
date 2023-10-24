@@ -25,7 +25,7 @@ export class FeedbackRepository implements IFeedbackRepository {
     return f;
   }
 
-  async getAdvertisimentFeedbacks(adId: string): Promise<IFeedback[]> {
+  async getAdvertisementFeedbacks(adId: string): Promise<IFeedback[]> {
     return await this.prisma.feedback.findMany({ where: { adId } });
   }
 

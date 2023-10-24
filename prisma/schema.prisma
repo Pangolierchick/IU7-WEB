@@ -57,7 +57,7 @@ model Feedback {
   feedback String
 
   user          User          @relation(fields: [userId], references: [id])
-  advertisiment Advertisement @relation(fields: [adId], references: [id])
+  advertisement Advertisement @relation(fields: [adId], references: [id])
 }
 
 model Favourites {
@@ -66,5 +66,5 @@ model Favourites {
   adId   String
 
   user          User          @relation(fields: [userId], references: [id])
-  advertisiment Advertisement @relation(fields: [adId], references: [id])
+  advertisement Advertisement @relation(fields: [adId], references: [id])
 }
