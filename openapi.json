@@ -196,6 +196,9 @@
               }
             }
           },
+          "400": {
+            "description": "bad request"
+          },
           "500": {
             "description": "internal server error"
           }
@@ -224,8 +227,8 @@
               }
             }
           },
-          "404": {
-            "description": "User not found"
+          "400": {
+            "description": "User not found or invalid request"
           },
           "500": {
             "description": "Internal server error"
@@ -250,6 +253,9 @@
         "responses": {
           "200": {
             "description": "Token is valid"
+          },
+          "400": {
+            "description": "Invalid response"
           },
           "401": {
             "description": "Invalid token"

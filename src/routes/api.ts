@@ -1,6 +1,5 @@
 import { Router } from "express";
-// import swaggerUi from "swagger-ui-express";
-import swaggerUi from "swaggerui";
+import swaggerUi from "swagger-ui-express";
 import * as swaggerDocument from "../../openapi.json";
 import listingRouter from "./listing";
 import userRouter from "./user";

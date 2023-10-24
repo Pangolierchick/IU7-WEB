@@ -1,6 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { IUser } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import { UserAlreadyExistError } from "../models/errors/userErrors";
 
 export class UserRepository implements IUserRepository {
   private prisma: PrismaClient;
@@ -54,6 +55,12 @@ export class UserRepository implements IUserRepository {
     try {
       await this.prisma.user.create({ data });
     } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2002") {
+          // NOTE: "Unique constraint failed on the {constraint}"
+          throw new UserAlreadyExistError();
+        }
+      }
       throw new Error("Failed to create new user");
     }
   }

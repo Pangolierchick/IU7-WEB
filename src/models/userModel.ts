@@ -3,6 +3,12 @@ import { v4 as uuidv4 } from "uuid";
 import { Hash } from "../hash";
 import { INITIAL_SCORE, IUser, UserRole } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import {
+  InvalidJWT,
+  JWTExpired,
+  UserNotFound,
+  WrongPasswordOrLoginError,
+} from "./errors/userErrors";
 
 const verifyToken = (token: string, secret: string) => {
   return new Promise<jwt.JwtPayload>((resolve, reject) => {
@@ -91,13 +97,13 @@ export class userModel {
 
     if (user) {
       if (!(await Hash.compare(password, user.password))) {
-        throw new Error("Incorrect password");
+        throw new UserNotFound(login);
       }
 
       return true;
     }
 
-    throw new Error("Incorrect login");
+    throw new UserNotFound(login);
   }
 
   public async getByLogin(login: string) {
@@ -107,7 +113,7 @@ export class userModel {
       return user;
     }
 
-    throw new Error(`User with login ${login} was not found.`);
+    throw new UserNotFound(login);
   }
 
   public async getUser(id: string) {
@@ -117,23 +123,22 @@ export class userModel {
       return user;
     }
 
-    throw new Error(`User with id ${id} was not found.`);
+    throw new UserNotFound(id);
   }
 
   public async loginUser(login: string, password: string) {
     const user = await this._userRepository.getByLogin(login);
 
     if (user === null) {
-      throw new Error(`User ${login} was not found`);
+      throw new WrongPasswordOrLoginError();
     }
 
     if (!(await Hash.compare(password, user.password))) {
-      throw new Error("Wrong password");
+      throw new WrongPasswordOrLoginError();
     }
 
     const secretKey = this.getSecret();
 
-    // const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: "1h" });
     const token = await signToken({ userId: user.id }, secretKey, {
       expiresIn: "8h",
     });
@@ -145,19 +150,24 @@ export class userModel {
     const secretKey = this.getSecret();
 
     try {
-      // const { userId } = jwt.verify(token, secretKey) as IUserTokenPayload;
       const { userId } = (await verifyToken(
         token,
         secretKey
       )) as IUserTokenPayload;
 
       if ((await this.checkUser(userId)) === false) {
-        throw new Error("Invalid JWT token (User was not found)");
+        throw new UserNotFound(userId);
       }
 
       return userId;
     } catch (e) {
-      throw new Error("Invalid JWT token");
+      if (e instanceof jwt.TokenExpiredError) {
+        throw new JWTExpired();
+      } else if (e instanceof jwt.JsonWebTokenError) {
+        throw new InvalidJWT(e.message);
+      } else {
+        throw new Error("Unknown jwt error");
+      }
     }
   }
 
@@ -179,7 +189,7 @@ export class userModel {
     const user = await this._userRepository.get(newUser.id);
 
     if (user === null) {
-      throw new Error(`User with id = ${newUser.id} doesn't exist`);
+      throw new UserNotFound(newUser.id);
     }
 
     await this._userRepository.update(newUser);

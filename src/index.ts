@@ -17,5 +17,5 @@ app.use(cors());
 app.use("/api", apiRouter);
 
 app.listen(config.port, () => {
-  console.log("Running");
+  console.log(`Running on localhost:${config.port}`);
 });
