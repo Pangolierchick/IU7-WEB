@@ -54,7 +54,7 @@ export class RentRepository implements IRentRepository {
     });
   }
 
-  async getAdvertisimentRents(adId: string): Promise<IRent[]> {
+  async getAdvertisementRents(adId: string): Promise<IRent[]> {
     return await this.prisma.rent.findMany({
       where: {
         adId,

@@ -11,7 +11,7 @@ export class AdMock implements IAdvertisementRepository {
     this.value = v;
   }
 
-  async getUsersAdvertisiments(userId: string): Promise<IAdvertisement[]> {
+  async getUsersAdvertisements(userId: string): Promise<IAdvertisement[]> {
     return this.value.filter((x) => x.ownerId === userId);
   }
 

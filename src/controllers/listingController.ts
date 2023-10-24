@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { matchedData, validationResult } from "express-validator";
 import { AccountManager } from "../managers/accountManager";
 import { AdvertisementManager } from "../managers/advertisementManager";
-import { AdvertisimentRepository } from "../repositories/advertisimentRepository";
+import { AdvertisementRepository } from "../repositories/advertisimentRepository";
 import { RentRepository } from "../repositories/rentRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { BaseController } from "./baseController";
@@ -15,7 +15,7 @@ class ListingController extends BaseController {
   constructor(prisma: PrismaClient) {
     super(prisma);
 
-    const _advRepo = new AdvertisimentRepository(prisma);
+    const _advRepo = new AdvertisementRepository(prisma);
     const _rentRepo = new RentRepository(prisma);
     const _userRepo = new UserRepository(prisma);
 
@@ -23,14 +23,14 @@ class ListingController extends BaseController {
     this._userManager = new AccountManager(_userRepo);
   }
 
-  public async getAdvertisiment(req: Request, res: Response) {
+  public async getAdvertisement(req: Request, res: Response) {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
       const { adId } = matchedData(req);
 
       try {
-        const ad = await this._advManager.getAdvertisimentWithOwner(adId);
+        const ad = await this._advManager.getAdvertisementWithOwner(adId);
 
         res.status(200).json(ad);
       } catch (e) {
@@ -41,13 +41,13 @@ class ListingController extends BaseController {
     }
   }
 
-  public async getUsersAdvertisiments(req: Request, res: Response) {
+  public async getUsersAdvertisements(req: Request, res: Response) {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
       const { ownerId } = matchedData(req);
       try {
-        const ads = await this._advManager.getUsersAdvertisiments(ownerId);
+        const ads = await this._advManager.getUsersAdvertisements(ownerId);
 
         res.json(ads);
       } catch (e) {
@@ -58,7 +58,7 @@ class ListingController extends BaseController {
     }
   }
 
-  public async createAdvertisiment(req: Request, res: Response) {
+  public async createAdvertisement(req: Request, res: Response) {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
@@ -66,7 +66,7 @@ class ListingController extends BaseController {
       const { description, cost, address } = matchedData(req);
 
       try {
-        const adId = await this._advManager.addAdvertisiment({
+        const adId = await this._advManager.addAdvertisement({
           ownerId,
           description,
           cost: Number(cost),
@@ -105,7 +105,7 @@ class ListingController extends BaseController {
     }
   }
 
-  public async approveAdvertisiment(req: Request, res: Response) {
+  public async approveAdvertisement(req: Request, res: Response) {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
@@ -114,7 +114,7 @@ class ListingController extends BaseController {
 
       try {
         const r = await this._advManager.approveAd(adId, adminId);
-        res.status(200).json({ r });
+        res.status(200).json({ result: "success" });
       } catch (e) {
         res.status(500).json({ errors: (e as Error).message });
       }
@@ -123,7 +123,7 @@ class ListingController extends BaseController {
     }
   }
 
-  public async deleteAdvertisiment(req: Request, res: Response) {
+  public async deleteAdvertisement(req: Request, res: Response) {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
@@ -141,14 +141,14 @@ class ListingController extends BaseController {
     }
   }
 
-  public async searchAdvertisiments(req: Request, res: Response) {
+  public async searchAdvertisements(req: Request, res: Response) {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
       const { address } = matchedData(req);
 
       try {
-        const ads = await this._advManager.searchAdvertisiments(address);
+        const ads = await this._advManager.searchAdvertisements(address);
         res.status(200).json({ ads });
       } catch (e) {
         res.status(500).json({ errors: (e as Error).message });
@@ -158,14 +158,14 @@ class ListingController extends BaseController {
     }
   }
 
-  public async getAdvertisimentRentDates(req: Request, res: Response) {
+  public async getAdvertisementRentDates(req: Request, res: Response) {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
       const { adId } = matchedData(req);
 
       try {
-        const dates = await this._advManager.getAdvertisimentsRentDates(adId);
+        const dates = await this._advManager.getAdvertisementsRentDates(adId);
 
         res.status(200).json(dates);
       } catch (e) {

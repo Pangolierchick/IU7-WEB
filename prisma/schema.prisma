@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,20 +16,16 @@ model Advertisement {
   scoreCount  Int
   address     String
   ownerId     String
-
-  rent       Rent[]
-  user       User         @relation(fields: [ownerId], references: [id])
-  feedback   Feedback[]
-  Favourites Favourites[]
+  user        User    @relation(fields: [ownerId], references: [id])
+  rent        Rent[]
 }
 
 model Rent {
-  id        String   @id
-  dateUntil DateTime
-  dateFrom  DateTime
-  userId    String
-  adId      String
-
+  id            String        @id
+  dateUntil     DateTime
+  dateFrom      DateTime
+  userId        String
+  adId          String
   advertisement Advertisement @relation(fields: [adId], references: [id])
   user          User          @relation(fields: [userId], references: [id])
 }
@@ -44,27 +37,6 @@ model User {
   score         Float
   scoreCount    Int             @default(0)
   role          Int
-  Rent          Rent[]
   Advertisement Advertisement[]
-  Feedback      Feedback[]
-  Favourites    Favourites[]
-}
-
-model Feedback {
-  id       String @id
-  userId   String
-  adId     String
-  feedback String
-
-  user          User          @relation(fields: [userId], references: [id])
-  advertisiment Advertisement @relation(fields: [adId], references: [id])
-}
-
-model Favourites {
-  id     String @id
-  userId String
-  adId   String
-
-  user          User          @relation(fields: [userId], references: [id])
-  advertisiment Advertisement @relation(fields: [adId], references: [id])
+  Rent          Rent[]
 }

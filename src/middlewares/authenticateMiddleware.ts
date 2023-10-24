@@ -23,6 +23,7 @@ export class AuthenticateMiddleware {
 
       next();
     } catch (e) {
+      console.log((e as Error).message);
       res.status(401).json({ errors: "User is not authorised" });
     }
   }

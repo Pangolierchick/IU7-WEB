@@ -46,7 +46,7 @@ export class RentMock implements IRentRepository {
     return r;
   }
 
-  async getAdvertisimentRents(adId: string): Promise<IRent[]> {
+  async getAdvertisementRents(adId: string): Promise<IRent[]> {
     return [];
   }
 

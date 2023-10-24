@@ -5,7 +5,7 @@ import {
 } from "../interfaces/IAdvertisement";
 import { IAdvertisementRepository } from "../interfaces/IAdvertisementRepository";
 
-export class AdvertisimentRepository implements IAdvertisementRepository {
+export class AdvertisementRepository implements IAdvertisementRepository {
   private prisma: PrismaClient;
   private convert = (
     ad: IAdvertisement & {
@@ -40,7 +40,7 @@ export class AdvertisimentRepository implements IAdvertisementRepository {
         where: { id: newAdv.id },
       });
     } catch (e) {
-      throw new Error(`Failed to update advertisiment with id=${newAdv.id}.`);
+      throw new Error(`Failed to update advertisement with id=${newAdv.id}.`);
     }
   }
 
@@ -50,7 +50,7 @@ export class AdvertisimentRepository implements IAdvertisementRepository {
       await this.prisma.advertisement.create({ data: d });
     } catch (e) {
       throw new Error(
-        `Failed to create advertisiment. ${(e as Error).message}`
+        `Failed to create advertisement. ${(e as Error).message}`
       );
     }
   }
@@ -59,7 +59,7 @@ export class AdvertisimentRepository implements IAdvertisementRepository {
     try {
       await this.prisma.advertisement.delete({ where: { id } });
     } catch (e) {
-      throw new Error("Failed to delete advertisiment");
+      throw new Error("Failed to delete advertisement");
     }
   }
 
@@ -71,7 +71,7 @@ export class AdvertisimentRepository implements IAdvertisementRepository {
       });
     } catch (e) {
       throw new Error(
-        `Failed to update score of advertisiment with id = ${id}`
+        `Failed to update score of advertisement with id = ${id}`
       );
     }
   }
@@ -84,7 +84,7 @@ export class AdvertisimentRepository implements IAdvertisementRepository {
       });
     } catch (e) {
       throw new Error(
-        `Failed to update description of advertisiment with id = ${id}`
+        `Failed to update description of advertisement with id = ${id}`
       );
     }
   }
@@ -97,7 +97,7 @@ export class AdvertisimentRepository implements IAdvertisementRepository {
       });
     } catch (e) {
       throw new Error(
-        `Failed to update price of advertisiment with id = ${id}`
+        `Failed to update price of advertisement with id = ${id}`
       );
     }
   }
@@ -109,11 +109,11 @@ export class AdvertisimentRepository implements IAdvertisementRepository {
         data: { isApproved: true },
       });
     } catch (e) {
-      throw new Error(`Failed to approve advertisiment with id = ${id}`);
+      throw new Error(`Failed to approve advertisement with id = ${id}`);
     }
   }
 
-  async getUsersAdvertisiments(userId: string): Promise<IAdvertisement[]> {
+  async getUsersAdvertisements(userId: string): Promise<IAdvertisement[]> {
     try {
       const ads = await this.prisma.advertisement.findMany({
         where: { ownerId: userId },

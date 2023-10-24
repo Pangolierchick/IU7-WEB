@@ -10,22 +10,22 @@ const listingController = new ListingController(prisma);
 const authMiddleware = new AuthenticateMiddleware(prisma);
 
 listingRouter.post(
-  "/createAdvertisiment",
+  "/createAdvertisement",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
   body(["description", "address"]).notEmpty().trim().escape(),
   body("cost").isNumeric(),
-  listingController.createAdvertisiment.bind(listingController)
+  listingController.createAdvertisement.bind(listingController)
 );
 
 listingRouter.get(
-  "/getAdvertisiment",
+  "/getAdvertisement",
   query("adId").notEmpty().escape(),
-  listingController.getAdvertisiment.bind(listingController)
+  listingController.getAdvertisement.bind(listingController)
 );
 listingRouter.get(
-  "/getUsersAdvertisiments",
+  "/getUsersAdvertisements",
   query("ownerId").isUUID(),
-  listingController.getUsersAdvertisiments.bind(listingController)
+  listingController.getUsersAdvertisements.bind(listingController)
 );
 
 listingRouter.post(
@@ -36,30 +36,30 @@ listingRouter.post(
   listingController.newRent.bind(listingController)
 );
 
-listingRouter.put(
+listingRouter.patch(
   "/approveAd",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
   query("adId").isUUID(),
-  listingController.approveAdvertisiment.bind(listingController)
+  listingController.approveAdvertisement.bind(listingController)
 );
 
 listingRouter.delete(
   "/deleteAd",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
   query("adId").isUUID(),
-  listingController.deleteAdvertisiment.bind(listingController)
+  listingController.deleteAdvertisement.bind(listingController)
 );
 
 listingRouter.get(
   "/searchAds",
   query("address").escape(),
-  listingController.searchAdvertisiments.bind(listingController)
+  listingController.searchAdvertisements.bind(listingController)
 );
 
 listingRouter.get(
-  "/getAdvertisimentRentDates",
+  "/getAdvertisementRentDates",
   query("adId").notEmpty().escape(),
-  listingController.getAdvertisimentRentDates.bind(listingController)
+  listingController.getAdvertisementRentDates.bind(listingController)
 );
 
 listingRouter.get(
