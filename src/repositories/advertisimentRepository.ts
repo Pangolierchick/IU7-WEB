@@ -18,6 +18,8 @@ export class AdvertisementRepository implements IAdvertisementRepository {
       ...ad,
     };
 
+    delete (convertedAd as any).user;
+
     return convertedAd;
   };
 

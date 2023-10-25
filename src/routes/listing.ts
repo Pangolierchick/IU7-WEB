@@ -32,14 +32,14 @@ listingRouter.post(
   "/createRent",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
   body(["from", "to"]).isDate(),
-  query(["adId"]).isUUID(),
+  body(["adId"]).isUUID(),
   listingController.newRent.bind(listingController)
 );
 
 listingRouter.patch(
   "/approveAd",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
-  query("adId").isUUID(),
+  body("adId").isUUID(),
   listingController.approveAdvertisement.bind(listingController)
 );
 

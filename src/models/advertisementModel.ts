@@ -5,6 +5,15 @@ import { IRent } from "../interfaces/IRent";
 import { IRentRepository } from "../interfaces/IRentRepository";
 import { INITIAL_SCORE, UserRole } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import {
+  AdvertisementAlreadyBooked,
+  AdvertisementNotApprovedError,
+  AdvertisementNotFound,
+  DeleteAdvertisementRightsError,
+  OwnerRentError,
+  RentDateError,
+} from "./errors/advertisementErrors";
+import { UserIsNotAdminError, UserNotFound } from "./errors/userErrors";
 
 type AdvertisementToBeApproved = {
   description: string;
@@ -34,7 +43,7 @@ export class AdvertisementModel {
     const ad = await this._advertisimentRepository.get(adId);
 
     if (!ad) {
-      throw new Error(`Advertisement with id ${adId} was not found`);
+      throw new AdvertisementNotFound(adId);
     }
 
     return ad;
@@ -66,29 +75,29 @@ export class AdvertisementModel {
     const today = new Date();
 
     if (from < today) {
-      throw new Error("Date can't be less than today date");
+      throw new RentDateError();
     }
 
     if (user === null) {
-      throw new Error(`User ${userId} doesn't exist`);
+      throw new UserNotFound(userId);
     }
 
     if (ad === null) {
-      throw new Error(`Ad ${adId} doesn't exist`);
+      throw new AdvertisementNotFound(adId);
     }
 
     if (userId === ad.ownerId) {
-      throw new Error("Owner cant rent own advertisement");
+      throw new OwnerRentError();
     }
 
     if (!ad.isApproved) {
-      throw new Error(`Ad ${adId} is not approved`);
+      throw new AdvertisementNotApprovedError(adId);
     }
 
     const rents = await this._rentRepository.getInDate(adId, from, to);
 
     if (rents.length !== 0) {
-      throw new Error(`Ad ${adId} already occupied in this dates`);
+      throw new AdvertisementAlreadyBooked();
     }
 
     const rent = RentBuilder.buildRent(adId, userId, from, to);
@@ -101,7 +110,7 @@ export class AdvertisementModel {
     const user = await this._userRepository.get(ad.ownerId);
 
     if (user === null) {
-      throw new Error(`User ${ad.ownerId} doesn't exist`);
+      throw new UserNotFound(ad.ownerId);
     }
 
     const _ad = AdvertisementBuilder.buildAdvertisement(ad);
@@ -113,17 +122,17 @@ export class AdvertisementModel {
     const user = await this._userRepository.get(adminId);
 
     if (user === null) {
-      throw new Error(`User ${adminId} doesn't exist`);
+      throw new UserNotFound(adminId);
     }
 
     if (user.role !== UserRole.Admin) {
-      throw new Error(`User ${adminId} not an admin`);
+      throw new UserIsNotAdminError(adId);
     }
 
     const ad = await this._advertisimentRepository.get(adId);
 
     if (ad === null) {
-      throw new Error(`Advertisement ${adId} doesn't exist`);
+      throw new AdvertisementNotFound(adId);
     }
 
     await this._advertisimentRepository.approve(adId);
@@ -136,17 +145,17 @@ export class AdvertisementModel {
     const ad = await this._advertisimentRepository.get(adId);
 
     if (user === null) {
-      throw new Error(`User ${userId} doesn't exist`);
+      throw new UserNotFound(userId);
     }
 
     if (ad === null) {
-      throw new Error(`Ad with id ${adId} doesn't exist`);
+      throw new AdvertisementNotFound(adId);
     }
 
     if (user.role === UserRole.Admin || userId === ad.ownerId) {
       await this._advertisimentRepository.delete(adId);
     } else {
-      throw new Error("User neither admin nor owner");
+      throw new DeleteAdvertisementRightsError(userId);
     }
   }
 
@@ -172,7 +181,7 @@ export class AdvertisementModel {
     const ad = await this._advertisimentRepository.getWithOwner(id);
 
     if (!ad) {
-      throw new Error(`Advertisement with id ${id} was not found`);
+      throw new AdvertisementNotFound(id);
     }
 
     return ad;

@@ -32,3 +32,10 @@ export class UserAlreadyExistError extends Error {
     this.name = "UserAlreadyExistError";
   }
 }
+
+export class UserIsNotAdminError extends Error {
+  constructor(userId?: string) {
+    super(`User ${userId ?? ""} is not an admin`);
+    this.name = "UserIsNotAdminError";
+  }
+}

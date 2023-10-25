@@ -1,7 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { matchedData, validationResult } from "express-validator";
+import { instanseOfAny } from "../misc";
 import { AdvertisementModel } from "../models/advertisementModel";
+import {
+  AdvertisementAlreadyBooked,
+  AdvertisementNotApprovedError,
+  AdvertisementNotFound,
+  DeleteAdvertisementRightsError,
+  OwnerRentError,
+  RentDateError,
+} from "../models/errors/advertisementErrors";
+import { UserIsNotAdminError, UserNotFound } from "../models/errors/userErrors";
 import { userModel } from "../models/userModel";
 import { AdvertisementRepository } from "../repositories/advertisimentRepository";
 import { RentRepository } from "../repositories/rentRepository";
@@ -34,7 +44,11 @@ class ListingController extends BaseController {
 
         res.status(200).json(ad);
       } catch (e) {
-        res.status(500).json({ errors: (e as Error).message });
+        if (e instanceof UserNotFound) {
+          res.status(400).json({ errors: e.message });
+        } else {
+          res.status(500).json({ errors: (e as Error).message });
+        }
       }
     } else {
       res.status(400).json({ errors: result.array() });
@@ -49,7 +63,7 @@ class ListingController extends BaseController {
       try {
         const ads = await this._advManager.getUsersAdvertisements(ownerId);
 
-        res.json(ads);
+        res.status(200).json(ads);
       } catch (e) {
         res.status(500).json({ errors: (e as Error).message });
       }
@@ -75,7 +89,11 @@ class ListingController extends BaseController {
 
         res.status(201).json({ adId });
       } catch (e) {
-        res.status(500).json({ errors: (e as Error).message });
+        if (e instanceof UserNotFound) {
+          res.status(400).json({ errors: e.message });
+        } else {
+          res.status(500).json({ errors: (e as Error).message });
+        }
       }
     } else {
       res.status(400).json({ errors: result.array() });
@@ -90,15 +108,28 @@ class ListingController extends BaseController {
       const userId = req.body.userId;
 
       try {
-        const rent = await this._advManager.newRent(
+        const rentId = await this._advManager.newRent(
           adId,
           userId,
           new Date(from),
           new Date(to)
         );
-        res.status(201).json({ rent });
+        res.status(201).json({ rentId });
       } catch (e) {
-        res.status(500).json({ errors: (e as Error).message });
+        if (
+          instanseOfAny(e as any, [
+            RentDateError,
+            UserNotFound,
+            AdvertisementNotFound,
+            OwnerRentError,
+            AdvertisementNotApprovedError,
+            AdvertisementAlreadyBooked,
+          ])
+        ) {
+          res.status(400).json({ errors: (e as Error).message });
+        } else {
+          res.status(500).json({ errors: (e as Error).message });
+        }
       }
     } else {
       res.status(400).json({ errors: result.array() });
@@ -116,7 +147,17 @@ class ListingController extends BaseController {
         await this._advManager.approveAd(adId, adminId);
         res.status(200).json({ result: "success" });
       } catch (e) {
-        res.status(500).json({ errors: (e as Error).message });
+        if (
+          instanseOfAny(e as any, [
+            UserNotFound,
+            UserIsNotAdminError,
+            AdvertisementNotFound,
+          ])
+        ) {
+          res.status(400).json({ errors: (e as Error).message });
+        } else {
+          res.status(500).json({ errors: (e as Error).message });
+        }
       }
     } else {
       res.status(400).json({ errors: result.array() });
@@ -134,7 +175,17 @@ class ListingController extends BaseController {
         await this._advManager.deleteAd(adId, ownerId);
         res.status(200).json({ result: "success" });
       } catch (e) {
-        res.status(500).json({ errors: (e as Error).message });
+        if (
+          instanseOfAny(e, [
+            UserNotFound,
+            AdvertisementNotFound,
+            DeleteAdvertisementRightsError,
+          ])
+        ) {
+          res.status(400).json({ errors: (e as Error).message });
+        } else {
+          res.status(500).json({ errors: (e as Error).message });
+        }
       }
     } else {
       res.status(400).json({ errors: result.array() });

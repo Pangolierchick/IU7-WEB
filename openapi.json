@@ -456,17 +456,21 @@
             "bearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "name": "adId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "adId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Advertisement approved successfully"
