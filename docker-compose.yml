@@ -1,16 +1,55 @@
 # Set the version of docker compose to use
-version: '3.9'
+version: "3.9"
 
 # The containers that compose the project
 services:
-  db:
-    image: postgres:latest
+  webapp:
     restart: always
-    container_name: integration-tests-prisma
-    ports:
-      - '5433:5432'
+    depends_on:
+      - postgres
+    build:
+      dockerfile: ./Dockerfile
+    networks:
+      - postgres_network
+      - nginx_network
+    deploy:
+      mode: replicated
+      replicas: 3
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
     environment:
-      POSTGRES_USER: prisma
-      POSTGRES_PASSWORD: prisma
-      POSTGRES_DB: tests
-      POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: web
+    restart: unless-stopped
+    ports:
+      - "5435:5432"
+    networks:
+      - postgres_network
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  nginx:
+    image: "byjg/nginx-extras"
+    container_name: nginx
+    volumes:
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./static:/static
+    depends_on:
+      - webapp
+    ports:
+      - "8081:8080"
+    networks:
+      - nginx_network
+    restart: "always"
+
+volumes:
+  postgres:
+
+networks:
+  postgres_network:
+    driver: bridge
+  nginx_network:
+    driver: bridge

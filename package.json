@@ -28,6 +28,7 @@
   "scripts": {
     "build": "tsc",
     "start": "yarn run build && node ./build/src/index.js",
+    "start:docker": "yarn prisma migrate deploy && yarn start",
     "lint": "eslint .",
     "fix": "eslint --fix --ext .ts .",
     "test:unit": "vitest unit",
