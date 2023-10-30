@@ -79,7 +79,8 @@ services:
     container_name: nginx
     volumes:
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./static:/static
+      - ./etc/static:/static
+      - ./README.md:/static/doc/README.md
     depends_on:
       - webapp
     ports:
