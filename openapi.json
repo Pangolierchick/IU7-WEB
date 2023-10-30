@@ -4,7 +4,10 @@
     "title": "IU7 WEB API",
     "version": "1.0"
   },
-  "servers": [{ "url": "http://localhost:3000/" }],
+  "servers": [
+    { "url": "http://localhost:8081/" },
+    { "url": "http://localhost:8081/mirror1" }
+  ],
   "components": {
     "securitySchemes": {
       "bearerAuth": {

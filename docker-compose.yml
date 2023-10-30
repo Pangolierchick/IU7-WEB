@@ -15,6 +15,22 @@ services:
     deploy:
       mode: replicated
       replicas: 3
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+
+  webapp_mirror:
+    restart: always
+    depends_on:
+      - postgres_repl
+    build:
+      dockerfile: ./Dockerfile
+    networks:
+      - postgres_network
+      - nginx_network
+    environment:
+      - DATABASE_URL=${MIRRORDB_URL}
+      - SECRET_KEY=${SECRET_KEY}
 
   postgres:
     image: postgres:latest
@@ -30,6 +46,33 @@ services:
       - postgres_network
     volumes:
       - postgres:/var/lib/postgresql/data
+
+  postgres_repl:
+    image: postgres:latest
+    container_name: postgres_repl
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: web
+    restart: unless-stopped
+    networks:
+      - postgres_network
+    volumes:
+      - postgres_repl:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - postgres_network
+      - nginx_network
 
   nginx:
     image: "byjg/nginx-extras"
@@ -47,6 +90,8 @@ services:
 
 volumes:
   postgres:
+  pgadmin-data:
+  postgres_repl:
 
 networks:
   postgres_network:
