@@ -6,7 +6,8 @@
   },
   "servers": [
     { "url": "http://localhost:8081/" },
-    { "url": "http://localhost:8081/mirror1" }
+    { "url": "http://localhost:8081/mirror1" },
+    { "url": "http://localhost:3000/" }
   ],
   "components": {
     "securitySchemes": {
@@ -99,15 +100,47 @@
     }
   ],
   "paths": {
-    "/api/v1/user/getUser": {
+    "/api/v1/listing": {
+      "post": {
+        "tags": ["Listings"],
+        "summary": "Create a new advertisement",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "cost": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Advertisement created successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/listing/{id}": {
       "get": {
-        "summary": "Returns user object by his login",
-        "tags": ["User"],
+        "tags": ["Listings"],
+        "summary": "Get advertisement by ID",
         "parameters": [
           {
-            "name": "login",
-            "in": "query",
-            "description": "User login",
+            "in": "path",
+            "name": "id",
             "required": true,
             "schema": {
               "type": "string"
@@ -116,28 +149,166 @@
         ],
         "responses": {
           "200": {
-            "description": "valid response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
+            "description": "Advertisement details"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Listings"],
+        "summary": "Delete advertisement by ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
-          },
-          "404": {
-            "description": "User not found"
-          },
-          "500": {
-            "description": "Internal server error"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Advertisement deleted successfully"
           }
         }
       }
     },
-    "/api/v1/user/login": {
+    "/api/v1/listing/users/{ownerId}": {
+      "get": {
+        "tags": ["Listings"],
+        "summary": "Get advertisements by owner ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ownerId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Advertisements by owner"
+          }
+        }
+      }
+    },
+    "/api/v1/listing/{adId}/rent": {
       "post": {
-        "summary": "Get JWT token by login",
+        "tags": ["Listings", "Rents"],
+        "summary": "Create a new rent for an advertisement",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "adId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "to": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rent created successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/listing/{adId}/approval": {
+      "patch": {
+        "tags": ["Listings", "Rents"],
+        "summary": "Approve an advertisement",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "adId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Advertisement approved successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/listing/{adId}/rent/dates": {
+      "get": {
+        "tags": ["Listings"],
+        "summary": "Get rent dates for an advertisement",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "adId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rent dates for the advertisement"
+          }
+        }
+      }
+    },
+    "/api/v1/listing/rent/users/{id}": {
+      "get": {
+        "tags": ["Listings", "Rents"],
+        "summary": "Get rents by user ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rents by user"
+          }
+        }
+      }
+    },
+    "/api/v1/user/auth": {
+      "get": {
         "tags": ["User"],
+        "summary": "User login",
         "parameters": [
           {
             "name": "login",
@@ -157,137 +328,27 @@
             }
           }
         ],
-
         "responses": {
           "200": {
-            "description": "valid response",
-            "content": {
-              "application/json": {
-                "example": {
-                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZGFlZDU3Zi1kMjhkLTQ4ZTctYjQ0ZS1hMzY2YzNkZDAyZDkiLCJpYXQiOjE2OTgxNTkwNTksImV4cCI6MTY5ODE4Nzg1OX0.XHTw_EHXuO3kI0D3IofcUr50nxuhaxegmylo-WHG1RQ"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "internal server error"
+            "description": "User logged in successfully"
           }
         }
-      }
-    },
-    "/api/v1/user/signup": {
+      },
+
       "post": {
         "tags": ["User"],
-        "summary": "Creates user struct with given login and password",
+        "summary": "User signup",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Login"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "valid response",
-            "content": {
-              "application/json": {
-                "example": {
-                  "userId": "bdaed57f-d28d-48e7-b44e-a366c3dd02d9"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "bad request"
-          },
-          "500": {
-            "description": "internal server error"
-          }
-        }
-      }
-    },
-    "/api/v1/user/getUserById": {
-      "get": {
-        "tags": ["User"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "required": true,
-            "description": "User uuid"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "valid response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "User not found or invalid request"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/api/v1/user/validateToken": {
-      "get": {
-        "summary": "Validate user token",
-        "tags": ["User"],
-        "parameters": [
-          {
-            "name": "token",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Token is valid"
-          },
-          "400": {
-            "description": "Invalid response"
-          },
-          "401": {
-            "description": "Invalid token"
-          }
-        }
-      }
-    },
-
-    "/api/v1/listing/createAdvertisement": {
-      "post": {
-        "tags": ["Listings"],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "address": {
+                  "login": {
                     "type": "string"
                   },
-                  "cost": {
-                    "type": "number"
-                  },
-                  "description": {
+                  "password": {
                     "type": "string"
                   }
                 }
@@ -296,39 +357,20 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Advertisement created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "adId": {
-                      "type": "string",
-                      "description": "uuid"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "User is not authorised"
-          },
-          "500": {
-            "description": "internal server error"
+          "200": {
+            "description": "User signed up successfully"
           }
         }
       }
     },
-    "/api/v1/listing/getAdvertisement": {
+    "/api/v1/user/{login}": {
       "get": {
-        "tags": ["Listings"],
+        "tags": ["User"],
+        "summary": "Get user information by login",
         "parameters": [
           {
-            "name": "adId",
-            "in": "query",
-            "description": "uuid",
+            "in": "path",
+            "name": "login",
             "required": true,
             "schema": {
               "type": "string"
@@ -337,258 +379,20 @@
         ],
         "responses": {
           "200": {
-            "description": "valid response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Advertisement"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "ownerId": {
-                          "type": "string"
-                        },
-                        "login": {
-                          "type": "string"
-                        },
-                        "ownerScore": {
-                          "type": "number"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
+            "description": "User information"
           }
         }
       }
     },
-    "/api/v1/listing/getUsersAdvertisements": {
+    "/api/v1/user/id/{id}": {
       "get": {
-        "tags": ["Listings"],
-        "summary": "Get advertisements by owner ID",
+        "tags": ["User"],
+        "summary": "Get user information by ID",
         "parameters": [
           {
-            "name": "ownerId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Advertisements found",
-            "content": {
-              "application/json": {
-                "example": [
-                  {
-                    "id": "123",
-                    "description": "Sample advertisement 1",
-                    "address": "123 Main St",
-                    "cost": 100
-                  },
-                  {
-                    "id": "124",
-                    "description": "Sample advertisement 2",
-                    "address": "456 Elm St",
-                    "cost": 150
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/listing/createRent": {
-      "post": {
-        "tags": ["Rents"],
-        "summary": "Create a new rent",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "from": {
-                    "type": "string",
-                    "format": "date"
-                  },
-                  "to": {
-                    "type": "string",
-                    "format": "date"
-                  },
-                  "adId": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                },
-                "required": ["from", "to", "adId"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Rent created successfully"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/api/v1/listing/approveAd": {
-      "patch": {
-        "tags": ["Listings"],
-        "summary": "Approve an advertisement",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "adId": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Advertisement approved successfully"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/api/v1/listing/deleteAd": {
-      "delete": {
-        "tags": ["Listings"],
-        "summary": "Delete an advertisement",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "adId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Advertisement deleted successfully"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/api/v1/listing/searchAds": {
-      "get": {
-        "tags": ["Listings"],
-        "summary": "Search for advertisements",
-        "parameters": [
-          {
-            "name": "address",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Search results",
-            "content": {
-              "application/json": {
-                "example": [
-                  {
-                    "id": "123",
-                    "description": "Sample advertisement 1",
-                    "address": "123 Main St",
-                    "cost": 100
-                  },
-                  {
-                    "id": "124",
-                    "description": "Sample advertisement 2",
-                    "address": "456 Elm St",
-                    "cost": 150
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/listing/getAdvertisementRentDates": {
-      "get": {
-        "tags": ["Listings", "Rents"],
-        "summary": "Get rent dates for an advertisement",
-        "parameters": [
-          {
-            "name": "adId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Rent dates found",
-            "content": {
-              "application/json": {
-                "example": ["2023-10-25", "2023-10-26"]
-              }
-            }
-          },
-          "404": {
-            "description": "Advertisement not found"
-          }
-        }
-      }
-    },
-    "/api/v1/listing/getUsersRents": {
-      "get": {
-        "tags": ["User", "Rents"],
-        "summary": "Get rents by user ID",
-        "parameters": [
-          {
+            "in": "path",
             "name": "id",
-            "in": "query",
+            "required": true,
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -597,23 +401,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Rents found",
-            "content": {
-              "application/json": {
-                "example": [
-                  {
-                    "id": "123",
-                    "from": "2023-10-25",
-                    "to": "2023-10-26"
-                  },
-                  {
-                    "id": "124",
-                    "from": "2023-10-28",
-                    "to": "2023-10-29"
-                  }
-                ]
-              }
-            }
+            "description": "User information"
           }
         }
       }
