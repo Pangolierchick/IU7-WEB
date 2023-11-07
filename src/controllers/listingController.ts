@@ -37,10 +37,10 @@ class ListingController extends BaseController {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
-      const { adId } = matchedData(req);
+      const { id } = matchedData(req);
 
       try {
-        const ad = await this._advManager.getAdvertisementWithOwner(adId);
+        const ad = await this._advManager.getAdvertisementWithOwner(id);
 
         res.status(200).json(ad);
       } catch (e) {
@@ -168,11 +168,11 @@ class ListingController extends BaseController {
     const result = validationResult(req);
 
     if (result.isEmpty()) {
-      const { adId } = matchedData(req);
+      const { id } = matchedData(req);
       const ownerId = req.body.userId;
 
       try {
-        await this._advManager.deleteAd(adId, ownerId);
+        await this._advManager.deleteAd(id, ownerId);
         res.status(200).json({ result: "success" });
       } catch (e) {
         if (

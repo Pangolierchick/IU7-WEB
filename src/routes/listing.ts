@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
-import { body, query } from "express-validator";
+import { body, param } from "express-validator";
 import ListingController from "../controllers/listingController";
 import { AuthenticateMiddleware } from "../middlewares/authenticateMiddleware";
 
@@ -10,7 +10,7 @@ const listingController = new ListingController(prisma);
 const authMiddleware = new AuthenticateMiddleware(prisma);
 
 listingRouter.post(
-  "/createAdvertisement",
+  "/",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
   body(["description", "address"]).notEmpty().trim().escape(),
   body("cost").isNumeric(),
@@ -18,53 +18,47 @@ listingRouter.post(
 );
 
 listingRouter.get(
-  "/getAdvertisement",
-  query("adId").notEmpty().escape(),
+  "/:id",
+  param("id").notEmpty().escape(),
   listingController.getAdvertisement.bind(listingController)
 );
 listingRouter.get(
-  "/getUsersAdvertisements",
-  query("ownerId").isUUID(),
+  "/users/:ownerId",
+  param("ownerId").isUUID(),
   listingController.getUsersAdvertisements.bind(listingController)
 );
 
 listingRouter.post(
-  "/createRent",
+  "/:adId/rent",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
   body(["from", "to"]).isDate(),
-  body(["adId"]).isUUID(),
+  param(["adId"]).isUUID(),
   listingController.newRent.bind(listingController)
 );
 
 listingRouter.patch(
-  "/approveAd",
+  "/:adId/approval",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
-  body("adId").isUUID(),
+  param("adId").isUUID(),
   listingController.approveAdvertisement.bind(listingController)
 );
 
 listingRouter.delete(
-  "/deleteAd",
+  "/:id",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
-  query("adId").isUUID(),
+  param("id").isUUID(),
   listingController.deleteAdvertisement.bind(listingController)
 );
 
 listingRouter.get(
-  "/searchAds",
-  query("address").escape(),
-  listingController.searchAdvertisements.bind(listingController)
-);
-
-listingRouter.get(
-  "/getAdvertisementRentDates",
-  query("adId").notEmpty().escape(),
+  "/:adId/rent/dates",
+  param("adId").notEmpty().escape(),
   listingController.getAdvertisementRentDates.bind(listingController)
 );
 
 listingRouter.get(
-  "/getUsersRents",
-  query("id").isUUID(),
+  "/rent/users/:id",
+  param("id").isUUID(),
   listingController.getUsersRents.bind(listingController)
 );
 
