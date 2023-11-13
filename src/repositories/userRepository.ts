@@ -61,6 +61,7 @@ export class UserRepository implements IUserRepository {
           throw new UserAlreadyExistError();
         }
       }
+
       throw new Error("Failed to create new user");
     }
   }

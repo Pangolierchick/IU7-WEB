@@ -4,7 +4,7 @@ version: "3.9"
 # The containers that compose the project
 services:
   webapp:
-    restart: always
+    restart: unless-stopped
     depends_on:
       - postgres
     build:
@@ -16,11 +16,11 @@ services:
       mode: replicated
       replicas: 3
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL_DOCKER}
       - SECRET_KEY=${SECRET_KEY}
 
   webapp_mirror:
-    restart: always
+    restart: unless-stopped
     depends_on:
       - postgres_repl
     build:
@@ -33,32 +33,42 @@ services:
       - SECRET_KEY=${SECRET_KEY}
 
   postgres:
-    image: postgres:latest
+    image: "bitnami/postgresql:latest"
     container_name: postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: web
-    restart: unless-stopped
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=replicator
+      - POSTGRESQL_REPLICATION_PASSWORD=password
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=${DB_PASSWORD}
+      - POSTGRESQL_DATABASE=web
     ports:
       - "5435:5432"
     networks:
       - postgres_network
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - ./postgres:/bitnami/postgresql
 
   postgres_repl:
-    image: postgres:latest
+    image: "bitnami/postgresql:latest"
     container_name: postgres_repl
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: web
-    restart: unless-stopped
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_MASTER_HOST=postgres
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - POSTGRESQL_REPLICATION_USER=replicator
+      - POSTGRESQL_REPLICATION_PASSWORD=password
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=${DB_PASSWORD}
+      - POSTGRESQL_DATABASE=web
+    depends_on:
+      - postgres
+    ports:
+      - "5436:5432"
     networks:
       - postgres_network
     volumes:
-      - postgres_repl:/var/lib/postgresql/data
+      - ./postgres_repl:/bitnami/postgresql
 
   pgadmin:
     container_name: pgadmin
@@ -84,10 +94,10 @@ services:
     depends_on:
       - webapp
     ports:
-      - "8081:8080"
+      - "80:8080"
     networks:
       - nginx_network
-    restart: "always"
+    restart: unless-stopped
 
 volumes:
   postgres:
