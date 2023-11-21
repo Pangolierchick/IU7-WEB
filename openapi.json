@@ -20,7 +20,7 @@
   },
   "tags": [
     {
-      "name": "User",
+      "name": "Users",
       "description": "Endpoints for getting and working with users"
     },
     {
@@ -33,7 +33,7 @@
     }
   ],
   "paths": {
-    "/api/v1/listing": {
+    "/api/v1/listings": {
       "post": {
         "tags": ["Listings"],
         "summary": "Create a new advertisement",
@@ -64,39 +64,52 @@
             "description": "Advertisement created successfully"
           }
         }
-      }
-    },
-    "/api/v1/listing/{id}": {
+      },
       "get": {
         "tags": ["Listings"],
-        "summary": "Get advertisement by ID",
+        "summary": "Get advertisements",
         "parameters": [
           {
             "in": "path",
             "name": "id",
-            "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "login",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "rentDates",
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Advertisement details"
+            "description": "Advertisements"
           }
         }
       },
       "delete": {
         "tags": ["Listings"],
-        "summary": "Delete advertisement by ID",
+        "summary": "Delete advertisements by ID",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
             "name": "id",
-            "required": true,
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         ],
@@ -105,16 +118,15 @@
             "description": "Advertisement deleted successfully"
           }
         }
-      }
-    },
-    "/api/v1/listing/users/{ownerId}": {
-      "get": {
+      },
+      "patch": {
         "tags": ["Listings"],
-        "summary": "Get advertisements by owner ID",
+        "summary": "Update advertisement",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
-            "name": "ownerId",
+            "name": "adId",
             "required": true,
             "schema": {
               "type": "string",
@@ -122,17 +134,43 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "login": {
+                    "type": "string",
+                    "format": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  },
+                  "score": {
+                    "type": "number"
+                  },
+                  "role": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Advertisements by owner"
+            "description": "Advertisement approved successfully"
           }
         }
       }
     },
-    "/api/v1/listing/{adId}/rent": {
+    "/api/v1/rents": {
       "post": {
-        "tags": ["Listings", "Rents"],
-        "summary": "Create a new rent for an advertisement",
+        "tags": ["Rents"],
+        "summary": "Create a new rent",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
@@ -170,18 +208,23 @@
             "description": "Rent created successfully"
           }
         }
-      }
-    },
-    "/api/v1/listing/{adId}/approval": {
-      "patch": {
-        "tags": ["Listings", "Rents"],
-        "summary": "Approve an advertisement",
+      },
+      "get": {
+        "tags": ["Rents"],
+        "summary": "Get rents",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "in": "path",
             "name": "adId",
-            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -190,57 +233,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Advertisement approved successfully"
+            "description": "Rents"
           }
         }
       }
     },
-    "/api/v1/listing/{adId}/rent/dates": {
+    "/api/v1/auth": {
       "get": {
-        "tags": ["Listings"],
-        "summary": "Get rent dates for an advertisement",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "adId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Rent dates for the advertisement"
-          }
-        }
-      }
-    },
-    "/api/v1/listing/rent/users/{id}": {
-      "get": {
-        "tags": ["Listings", "Rents"],
-        "summary": "Get rents by user ID",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Rents by user"
-          }
-        }
-      }
-    },
-    "/api/v1/user/auth": {
-      "get": {
-        "tags": ["User"],
+        "tags": ["Auth"],
         "summary": "User login",
         "parameters": [
           {
@@ -269,7 +269,7 @@
       },
 
       "post": {
-        "tags": ["User"],
+        "tags": ["Auth"],
         "summary": "User signup",
         "requestBody": {
           "required": true,
@@ -296,45 +296,29 @@
         }
       }
     },
-    "/api/v1/user/{login}": {
+    "/api/v1/users/": {
       "get": {
-        "tags": ["User"],
-        "summary": "Get user information by login",
+        "tags": ["Users"],
+        "summary": "Get users",
         "parameters": [
           {
             "in": "path",
             "name": "login",
-            "required": true,
             "schema": {
               "type": "string"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User information"
-          }
-        }
-      }
-    },
-    "/api/v1/user/id/{id}": {
-      "get": {
-        "tags": ["User"],
-        "summary": "Get user information by ID",
-        "parameters": [
+          },
           {
             "in": "path",
             "name": "id",
-            "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "uuid"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "User information"
+            "description": "Return users"
           }
         }
       }
