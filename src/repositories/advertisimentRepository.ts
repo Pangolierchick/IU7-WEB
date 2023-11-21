@@ -1,9 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 import {
   IAdvertisement,
   IAdvertisementWithOwner,
 } from "../interfaces/IAdvertisement";
 import { IAdvertisementRepository } from "../interfaces/IAdvertisementRepository";
+import { ReadOnlyError } from "../models/errors/generalErrors";
 
 export class AdvertisementRepository implements IAdvertisementRepository {
   private prisma: PrismaClient;
@@ -35,13 +37,20 @@ export class AdvertisementRepository implements IAdvertisementRepository {
     return this.prisma.advertisement.findMany({ orderBy: { address: "asc" } });
   }
 
-  async update(newAdv: IAdvertisement): Promise<void> {
+  async update(newAdv: Partial<IAdvertisement>): Promise<void> {
+    if (!newAdv.id) {
+      throw new Error("Field id is required");
+    }
+
     try {
       await this.prisma.advertisement.update({
         data: newAdv,
         where: { id: newAdv.id },
       });
     } catch (e) {
+      if (e instanceof PrismaClientUnknownRequestError) {
+        throw new ReadOnlyError();
+      }
       throw new Error(`Failed to update advertisement with id=${newAdv.id}.`);
     }
   }
@@ -51,6 +60,9 @@ export class AdvertisementRepository implements IAdvertisementRepository {
     try {
       await this.prisma.advertisement.create({ data: d });
     } catch (e) {
+      if (e instanceof PrismaClientUnknownRequestError) {
+        throw new ReadOnlyError();
+      }
       throw new Error(
         `Failed to create advertisement. ${(e as Error).message}`
       );
@@ -61,6 +73,9 @@ export class AdvertisementRepository implements IAdvertisementRepository {
     try {
       await this.prisma.advertisement.delete({ where: { id } });
     } catch (e) {
+      if (e instanceof PrismaClientUnknownRequestError) {
+        throw new ReadOnlyError();
+      }
       throw new Error("Failed to delete advertisement");
     }
   }
@@ -166,5 +181,22 @@ export class AdvertisementRepository implements IAdvertisementRepository {
       return this.convert(ad);
     }
     return null;
+  }
+
+  async getWithFilter(
+    filter: Partial<IAdvertisement>
+  ): Promise<IAdvertisement[]> {
+    return await this.prisma.advertisement.findMany({ where: { ...filter } });
+  }
+
+  async deleteMany(ids: string[]): Promise<number> {
+    let i = 0;
+
+    for (const id of ids) {
+      await this.prisma.advertisement.delete({ where: { id } });
+      i++;
+    }
+
+    return i;
   }
 }

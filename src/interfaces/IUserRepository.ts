@@ -6,4 +6,5 @@ export interface IUserRepository extends IRepository<IUser> {
   updateLogin(id: string, newLogin: string): Promise<void>;
   updateScore(id: string, newScore: number): Promise<void>;
   getByLogin(login: string): Promise<IUser | null>;
+  getWithFilter(filters: Partial<IUser>): Promise<IUser[]>;
 }

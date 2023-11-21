@@ -185,6 +185,10 @@ export class userModel {
     return admin.id;
   }
 
+  public async getUsersWithFilters(filters: Partial<IUser>) {
+    return await this._userRepository.getWithFilter(filters);
+  }
+
   public async updateUser(newUser: IUser) {
     const user = await this._userRepository.get(newUser.id);
 

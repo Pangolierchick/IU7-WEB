@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { IUser } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import { ReadOnlyError } from "../models/errors/generalErrors";
 import { UserAlreadyExistError } from "../models/errors/userErrors";
 
 export class UserRepository implements IUserRepository {
@@ -55,6 +56,9 @@ export class UserRepository implements IUserRepository {
     try {
       await this.prisma.user.create({ data });
     } catch (e) {
+      if (e instanceof Prisma.PrismaClientUnknownRequestError) {
+        throw new ReadOnlyError();
+      }
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === "P2002") {
           // NOTE: "Unique constraint failed on the {constraint}"
@@ -84,5 +88,13 @@ export class UserRepository implements IUserRepository {
 
   async getByLogin(login: string): Promise<IUser | null> {
     return this.prisma.user.findFirst({ where: { login } });
+  }
+
+  async getWithFilter(filters: Partial<IUser>): Promise<IUser[]> {
+    return this.prisma.user.findMany({
+      where: {
+        ...filters,
+      },
+    });
   }
 }

@@ -9,9 +9,11 @@ import {
   AdvertisementAlreadyBooked,
   AdvertisementNotApprovedError,
   AdvertisementNotFound,
+  AdvertisementRightsError,
   DeleteAdvertisementRightsError,
   OwnerRentError,
   RentDateError,
+  UpdateAdvertisementRightsError,
 } from "./errors/advertisementErrors";
 import { UserIsNotAdminError, UserNotFound } from "./errors/userErrors";
 
@@ -47,6 +49,53 @@ export class AdvertisementModel {
     }
 
     return ad;
+  }
+
+  public async deleteAdvertisements(userId: string, ids: string[]) {
+    const user = await this._userRepository.get(userId);
+
+    if (!user) {
+      throw new UserNotFound(userId);
+    }
+
+    for (const adId of ids) {
+      const ad = await this.getAdvertisement(adId);
+
+      if (ad.ownerId === user.id || user.role === UserRole.Admin) {
+        await this._advertisimentRepository.delete(adId);
+      } else {
+        throw new AdvertisementRightsError(userId);
+      }
+    }
+  }
+
+  public async updateAdvertisement(ad: Partial<IAdvertisement>) {
+    if (!ad.id || !ad.ownerId) {
+      throw new Error("Fields id and ownerId is required");
+    }
+
+    const adv = await this._advertisimentRepository.get(ad.id);
+
+    if (adv === null) {
+      throw new AdvertisementNotFound(ad.id);
+    }
+
+    const user = await this._userRepository.get(ad.ownerId);
+
+    if (user === null) {
+      throw new UserNotFound();
+    }
+
+    if (ad.isApproved !== undefined && user.role !== UserRole.Admin) {
+      throw new UserIsNotAdminError(ad.id);
+    }
+
+    if (user.role === UserRole.Admin || adv.ownerId === ad.ownerId) {
+      await this._advertisimentRepository.update(ad);
+      return await this.getAdvertisement(ad.id);
+    }
+
+    throw new UpdateAdvertisementRightsError(ad.ownerId);
   }
 
   public async createAdvertisement(data: AdvertisementToBeApproved) {
@@ -177,6 +226,10 @@ export class AdvertisementModel {
     return ads.filter((x) => x.isApproved);
   }
 
+  public async getRents(filters: Partial<IRent>) {
+    return await this._rentRepository.getWithFilters(filters);
+  }
+
   public async getAdvertisementWithOwner(id: string) {
     const ad = await this._advertisimentRepository.getWithOwner(id);
 
@@ -185,6 +238,10 @@ export class AdvertisementModel {
     }
 
     return ad;
+  }
+
+  public async getAdvertisementWithFilter(filter: Partial<IAdvertisement>) {
+    return await this._advertisimentRepository.getWithFilter(filter);
   }
 
   public async getAdvertisementsRentDates(id: string) {

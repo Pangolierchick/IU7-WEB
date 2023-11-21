@@ -41,3 +41,19 @@ export class DeleteAdvertisementRightsError extends Error {
     this.name = "DeleteAdvertisementRightsError";
   }
 }
+
+export class UpdateAdvertisementRightsError extends Error {
+  constructor(userId?: string) {
+    super(
+      `User ${userId ?? ""} neither admin nor owner to Update advertisement`
+    );
+    this.name = "UpdateAdvertisementRightsError";
+  }
+}
+
+export class AdvertisementRightsError extends Error {
+  constructor(userId?: string) {
+    super(`User ${userId ?? ""} must be admin or owner to do that operation.`);
+    this.name = "AdvertisementRightError";
+  }
+}

@@ -9,4 +9,6 @@ export interface IAdvertisementRepository extends IRepository<IAdvertisement> {
   getUsersAdvertisements(userId: string): Promise<IAdvertisement[]>;
   getAllWithOwner(): Promise<IAdvertisementWithOwner[]>;
   getWithOwner(id: string): Promise<IAdvertisementWithOwner | null>;
+  getWithFilter(filter: Partial<IAdvertisement>): Promise<IAdvertisement[]>;
+  deleteMany(ids: string[]): Promise<number>;
 }

@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 import { IRent } from "../interfaces/IRent";
 import { IRentRepository } from "../interfaces/IRentRepository";
+import { ReadOnlyError } from "../models/errors/generalErrors";
 
 export class RentRepository implements IRentRepository {
   private prisma: PrismaClient;
@@ -32,6 +34,9 @@ export class RentRepository implements IRentRepository {
     try {
       await this.prisma.rent.create({ data });
     } catch (e) {
+      if (e instanceof PrismaClientUnknownRequestError) {
+        throw new ReadOnlyError();
+      }
       throw new Error("Failed to create new rent");
     }
   }
@@ -58,6 +63,14 @@ export class RentRepository implements IRentRepository {
     return await this.prisma.rent.findMany({
       where: {
         adId,
+      },
+    });
+  }
+
+  async getWithFilters(filters: Partial<IRent>) {
+    return await this.prisma.rent.findMany({
+      where: {
+        ...filters,
       },
     });
   }

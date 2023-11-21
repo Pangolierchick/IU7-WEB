@@ -70,21 +70,21 @@
         "summary": "Get advertisements",
         "parameters": [
           {
-            "in": "path",
+            "in": "query",
             "name": "id",
             "schema": {
               "type": "string"
             }
           },
           {
-            "in": "path",
-            "name": "login",
+            "in": "query",
+            "name": "ownerId",
             "schema": {
               "type": "string"
             }
           },
           {
-            "in": "path",
+            "in": "query",
             "name": "rentDates",
             "schema": {
               "type": "boolean"
@@ -103,7 +103,7 @@
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "in": "path",
+            "in": "query",
             "name": "id",
             "schema": {
               "type": "array",
@@ -125,8 +125,8 @@
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "in": "path",
-            "name": "adId",
+            "in": "query",
+            "name": "id",
             "required": true,
             "schema": {
               "type": "string",
@@ -141,19 +141,20 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "login": {
-                    "type": "string",
-                    "format": "string"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password"
-                  },
                   "score": {
                     "type": "number"
                   },
-                  "role": {
-                    "type": "integer"
+                  "description": {
+                    "type": "string"
+                  },
+                  "isApproved": {
+                    "type": "boolean"
+                  },
+                  "cost": {
+                    "type": "number"
+                  },
+                  "address": {
+                    "type": "string"
                   }
                 }
               }
@@ -174,7 +175,7 @@
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "in": "path",
+            "in": "query",
             "name": "adId",
             "required": true,
             "schema": {
@@ -215,7 +216,7 @@
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
-            "in": "path",
+            "in": "query",
             "name": "adId",
             "schema": {
               "type": "string",
@@ -223,7 +224,7 @@
             }
           },
           {
-            "in": "path",
+            "in": "query",
             "name": "userId",
             "schema": {
               "type": "string",
@@ -302,14 +303,14 @@
         "summary": "Get users",
         "parameters": [
           {
-            "in": "path",
+            "in": "query",
             "name": "login",
             "schema": {
               "type": "string"
             }
           },
           {
-            "in": "path",
+            "in": "query",
             "name": "id",
             "schema": {
               "type": "uuid"
