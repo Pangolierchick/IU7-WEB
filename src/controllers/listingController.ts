@@ -68,7 +68,6 @@ class ListingController extends BaseController {
       res.status(201).json({ id });
     } catch (e) {
       if (e instanceof ReadOnlyError) {
-        console.log("READ ONLY");
         res.status(404).json();
       } else {
         res.status(500).json({ error: "server error" });

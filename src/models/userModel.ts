@@ -92,40 +92,6 @@ export class userModel {
     return !!user;
   }
 
-  public async getByLoginAndPassword(login: string, password: string) {
-    const user = await this._userRepository.getByLogin(login);
-
-    if (user) {
-      if (!(await Hash.compare(password, user.password))) {
-        throw new UserNotFound(login);
-      }
-
-      return true;
-    }
-
-    throw new UserNotFound(login);
-  }
-
-  public async getByLogin(login: string) {
-    const user = await this._userRepository.getByLogin(login);
-
-    if (user) {
-      return user;
-    }
-
-    throw new UserNotFound(login);
-  }
-
-  public async getUser(id: string) {
-    const user = await this._userRepository.get(id);
-
-    if (user) {
-      return user;
-    }
-
-    throw new UserNotFound(id);
-  }
-
   public async loginUser(login: string, password: string) {
     const user = await this._userRepository.getByLogin(login);
 

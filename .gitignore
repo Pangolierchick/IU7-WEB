@@ -173,3 +173,5 @@ build
 
 .DS_Store
 postgres*
+
+allure-results

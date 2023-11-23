@@ -3,6 +3,16 @@ version: "3.9"
 
 # The containers that compose the project
 services:
+  dummy-db:
+    image: postgres:13
+    restart: always
+    container_name: tests-dummy-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: tests
   webapp:
     restart: unless-stopped
     depends_on:

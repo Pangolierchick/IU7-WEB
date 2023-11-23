@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "strict": true,
+    "strictNullChecks": true,
     "downlevelIteration": true,
     "skipLibCheck": true,
     "declaration": true,
@@ -17,7 +18,8 @@
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "allowJs": true
+    "allowJs": true,
+    "incremental": true
   },
 
   "include": ["./src/**/*.ts", "./tests/**/*.ts"],

@@ -10,7 +10,6 @@ import {
   AdvertisementNotApprovedError,
   AdvertisementNotFound,
   AdvertisementRightsError,
-  DeleteAdvertisementRightsError,
   OwnerRentError,
   RentDateError,
   UpdateAdvertisementRightsError,
@@ -105,14 +104,6 @@ export class AdvertisementModel {
     return adv.id;
   }
 
-  public async getUsersAdvertisements(userId: string) {
-    const ads = await this._advertisimentRepository.getUsersAdvertisements(
-      userId
-    );
-
-    return ads;
-  }
-
   public async newRent(adId: string, userId: string, from: Date, to: Date) {
     const user = await this._userRepository.get(userId);
     const ad = await this._advertisimentRepository.get(adId);
@@ -155,113 +146,12 @@ export class AdvertisementModel {
     return rent.id;
   }
 
-  public async addAdvertisement(ad: AdvertisementToBeApproved) {
-    const user = await this._userRepository.get(ad.ownerId);
-
-    if (user === null) {
-      throw new UserNotFound(ad.ownerId);
-    }
-
-    const _ad = AdvertisementBuilder.buildAdvertisement(ad);
-    await this._advertisimentRepository.create(_ad);
-    return _ad.id;
-  }
-
-  public async approveAd(adId: string, adminId: string) {
-    const user = await this._userRepository.get(adminId);
-
-    if (user === null) {
-      throw new UserNotFound(adminId);
-    }
-
-    if (user.role !== UserRole.Admin) {
-      throw new UserIsNotAdminError(adId);
-    }
-
-    const ad = await this._advertisimentRepository.get(adId);
-
-    if (ad === null) {
-      throw new AdvertisementNotFound(adId);
-    }
-
-    await this._advertisimentRepository.approve(adId);
-
-    return user.id;
-  }
-
-  public async deleteAd(adId: string, userId: string) {
-    const user = await this._userRepository.get(userId);
-    const ad = await this._advertisimentRepository.get(adId);
-
-    if (user === null) {
-      throw new UserNotFound(userId);
-    }
-
-    if (ad === null) {
-      throw new AdvertisementNotFound(adId);
-    }
-
-    if (user.role === UserRole.Admin || userId === ad.ownerId) {
-      await this._advertisimentRepository.delete(adId);
-    } else {
-      throw new DeleteAdvertisementRightsError(userId);
-    }
-  }
-
-  public async searchAdvertisements(needle: string) {
-    const ads = await this._advertisimentRepository.getAllWithOwner();
-
-    if (needle) {
-      const city = needle.split(",")[0]; //FIXME: search by city (maybe someday ill fix it)
-
-      const byCity = ads.filter(
-        (x) =>
-          x.address.split(",")[0].toLowerCase() === city.toLowerCase() &&
-          x.isApproved
-      );
-
-      return byCity;
-    }
-
-    return ads.filter((x) => x.isApproved);
-  }
-
   public async getRents(filters: Partial<IRent>) {
     return await this._rentRepository.getWithFilters(filters);
   }
 
-  public async getAdvertisementWithOwner(id: string) {
-    const ad = await this._advertisimentRepository.getWithOwner(id);
-
-    if (!ad) {
-      throw new AdvertisementNotFound(id);
-    }
-
-    return ad;
-  }
-
   public async getAdvertisementWithFilter(filter: Partial<IAdvertisement>) {
     return await this._advertisimentRepository.getWithFilter(filter);
-  }
-
-  public async getAdvertisementsRentDates(id: string) {
-    const rents = await this._rentRepository.getAdvertisementRents(id);
-    const dates: string[] = [];
-
-    rents.forEach((r) => {
-      dates.push(`${r.dateFrom.toISOString()}:${r.dateUntil.toISOString()}`);
-    });
-
-    return dates;
-  }
-
-  public async getUsersRents(id: string) {
-    try {
-      const rents = await this._rentRepository.getUsersRents(id);
-      return rents;
-    } catch (e) {
-      throw new Error("Failed to get users rents");
-    }
   }
 }
 
