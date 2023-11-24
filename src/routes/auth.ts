@@ -1,10 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import { body, query } from "express-validator";
 import { AuthController } from "../controllers/authController";
+import prisma from "../prismaInstance";
 
 const authRouter = Router();
-const prisma = new PrismaClient();
 const authController = new AuthController(prisma);
 
 authRouter.get(

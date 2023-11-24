@@ -6,17 +6,17 @@ import {
   UserAlreadyExistError,
   WrongPasswordOrLoginError,
 } from "../models/errors/userErrors";
-import { userModel } from "../models/userModel";
+import { UserModel } from "../models/userModel";
 import { UserRepository } from "../repositories/userRepository";
-import { Validate } from "../validationDec";
+import { Validate } from "../validationDecorator";
 import { BaseController } from "./baseController";
 
 export class AuthController extends BaseController {
-  private _userManager: userModel;
+  private _userManager: UserModel;
   constructor(prisma: PrismaClient) {
     super(prisma);
     const _userRepo = new UserRepository(this._prisma);
-    this._userManager = new userModel(_userRepo);
+    this._userManager = new UserModel(_userRepo);
   }
 
   @Validate

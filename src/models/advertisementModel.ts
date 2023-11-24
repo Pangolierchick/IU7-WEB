@@ -5,6 +5,7 @@ import { IRent } from "../interfaces/IRent";
 import { IRentRepository } from "../interfaces/IRentRepository";
 import { INITIAL_SCORE, UserRole } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import { AtLeast } from "../misc";
 import {
   AdvertisementAlreadyBooked,
   AdvertisementNotApprovedError,
@@ -68,18 +69,17 @@ export class AdvertisementModel {
     }
   }
 
-  public async updateAdvertisement(ad: Partial<IAdvertisement>) {
-    if (!ad.id || !ad.ownerId) {
-      throw new Error("Fields id and ownerId is required");
-    }
-
+  public async updateAdvertisement(
+    userId: string,
+    ad: AtLeast<IAdvertisement, "id">
+  ) {
     const adv = await this._advertisimentRepository.get(ad.id);
 
     if (adv === null) {
       throw new AdvertisementNotFound(ad.id);
     }
 
-    const user = await this._userRepository.get(ad.ownerId);
+    const user = await this._userRepository.get(userId);
 
     if (user === null) {
       throw new UserNotFound();
@@ -150,7 +150,7 @@ export class AdvertisementModel {
     return await this._rentRepository.getWithFilters(filters);
   }
 
-  public async getAdvertisementWithFilter(filter: Partial<IAdvertisement>) {
+  public async getAdvertisementsWithFilter(filter: Partial<IAdvertisement>) {
     return await this._advertisimentRepository.getWithFilter(filter);
   }
 }

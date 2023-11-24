@@ -1,18 +1,13 @@
-import { PrismaClient } from "@prisma/client";
 import { IUser } from "../../../src/interfaces/IUser";
+import prisma from "../../../src/prismaInstance";
 import { UserRepository } from "../../../src/repositories/userRepository";
-import { TestBuilder } from "./helpers";
+import { TestBuilder } from "../../helpers";
 
-const prisma: PrismaClient = new PrismaClient();
 const userRepo = new UserRepository(prisma);
 
-let builder: TestBuilder;
+const builder = new TestBuilder();
 
 describe("User repository unit tests", () => {
-  beforeEach(async () => {
-    builder = new TestBuilder();
-  });
-
   test("create & get", async () => {
     const user = builder.buildUser();
 

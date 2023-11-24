@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 import { IRent } from "../interfaces/IRent";
 import { IRentRepository } from "../interfaces/IRentRepository";
+import { AtLeast } from "../misc";
 import { ReadOnlyError } from "../models/errors/generalErrors";
 
 export class RentRepository implements IRentRepository {
@@ -19,7 +20,7 @@ export class RentRepository implements IRentRepository {
     return this.prisma.rent.findMany();
   }
 
-  async update(newRent: IRent): Promise<void> {
+  async update(newRent: AtLeast<IRent, "id">): Promise<void> {
     try {
       await this.prisma.rent.update({
         data: newRent,

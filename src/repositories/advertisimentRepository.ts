@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 import { IAdvertisement } from "../interfaces/IAdvertisement";
 import { IAdvertisementRepository } from "../interfaces/IAdvertisementRepository";
+import { AtLeast } from "../misc";
 import { ReadOnlyError } from "../models/errors/generalErrors";
 
 export class AdvertisementRepository implements IAdvertisementRepository {
@@ -19,7 +20,7 @@ export class AdvertisementRepository implements IAdvertisementRepository {
     return this.prisma.advertisement.findMany({ orderBy: { address: "asc" } });
   }
 
-  async update(newAdv: Partial<IAdvertisement>): Promise<void> {
+  async update(newAdv: AtLeast<IAdvertisement, "id">): Promise<void> {
     if (!newAdv.id) {
       throw new Error("Field id is required");
     }
@@ -33,7 +34,12 @@ export class AdvertisementRepository implements IAdvertisementRepository {
       if (e instanceof PrismaClientUnknownRequestError) {
         throw new ReadOnlyError();
       }
-      throw new Error(`Failed to update advertisement with id=${newAdv.id}.`);
+
+      throw new Error(
+        `Failed to update advertisement with id=${newAdv.id}. ${
+          (e as Error).message
+        }`
+      );
     }
   }
 

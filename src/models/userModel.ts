@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Hash } from "../hash";
 import { INITIAL_SCORE, IUser, UserRole } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import { AtLeast } from "../misc";
 import {
   InvalidJWT,
   JWTExpired,
@@ -69,7 +70,7 @@ class UserBuilder {
   }
 }
 
-export class userModel {
+export class UserModel {
   private _userRepository: IUserRepository;
 
   constructor(userRepo: IUserRepository) {
@@ -155,11 +156,20 @@ export class userModel {
     return await this._userRepository.getWithFilter(filters);
   }
 
-  public async updateUser(newUser: IUser) {
+  // FIXME: Add permission checks
+  /**
+   *
+   * @deprecated due to unsafe user update
+   */
+  public async updateUser(newUser: AtLeast<IUser, "id">) {
     const user = await this._userRepository.get(newUser.id);
 
     if (user === null) {
       throw new UserNotFound(newUser.id);
+    }
+
+    if (newUser.password) {
+      newUser.password = await Hash.hashAsync(newUser.password);
     }
 
     await this._userRepository.update(newUser);

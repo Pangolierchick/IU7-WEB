@@ -1,17 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { matchedData } from "express-validator";
-import { userModel } from "../models/userModel";
+import { UserModel } from "../models/userModel";
 import { UserRepository } from "../repositories/userRepository";
-import { Validate } from "../validationDec";
+import { Validate } from "../validationDecorator";
 import { BaseController } from "./baseController";
 
 export class UserController extends BaseController {
-  private _userManager: userModel;
+  private _userManager: UserModel;
   constructor(prisma: PrismaClient) {
     super(prisma);
     const _userRepo = new UserRepository(this._prisma);
-    this._userManager = new userModel(_userRepo);
+    this._userManager = new UserModel(_userRepo);
   }
 
   @Validate

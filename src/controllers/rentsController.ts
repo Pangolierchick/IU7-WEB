@@ -12,15 +12,15 @@ import {
 } from "../models/errors/advertisementErrors";
 import { ReadOnlyError } from "../models/errors/generalErrors";
 import { UserNotFound } from "../models/errors/userErrors";
-import { userModel } from "../models/userModel";
+import { UserModel } from "../models/userModel";
 import { AdvertisementRepository } from "../repositories/advertisimentRepository";
 import { RentRepository } from "../repositories/rentRepository";
 import { UserRepository } from "../repositories/userRepository";
-import { Validate } from "../validationDec";
+import { Validate } from "../validationDecorator";
 import { BaseController } from "./baseController";
 
 export class RentsController extends BaseController {
-  private _userManager: userModel;
+  private _userManager: UserModel;
   private _advManager: AdvertisementModel;
 
   constructor(prisma: PrismaClient) {
@@ -30,7 +30,7 @@ export class RentsController extends BaseController {
     const _userRepo = new UserRepository(prisma);
 
     this._advManager = new AdvertisementModel(_advRepo, _userRepo, _rentRepo);
-    this._userManager = new userModel(_userRepo);
+    this._userManager = new UserModel(_userRepo);
   }
   @Validate
   public async get(req: Request, res: Response) {

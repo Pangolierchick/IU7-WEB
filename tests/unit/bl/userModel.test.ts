@@ -2,13 +2,13 @@ import { MockProxy, captor, mock } from "jest-mock-extended";
 import { UserRole } from "../../../src/interfaces/IUser";
 import { IUserRepository } from "../../../src/interfaces/IUserRepository";
 import { userModel } from "../../../src/models/userModel";
-import { TestBuilder } from "../da/helpers";
+import { TestBuilder } from "../../helpers";
 
 describe("userModel tests (mocks)", () => {
   let userRepo: MockProxy<IUserRepository>;
   let _userModel: userModel;
 
-  beforeEach(() => {
+  afterEach(() => {
     userRepo = mock<IUserRepository>();
     _userModel = new userModel(userRepo);
   });

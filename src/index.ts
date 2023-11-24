@@ -19,3 +19,6 @@ app.use("/api", apiRouter);
 app.listen(config.port, () => {
   console.log(`Running on localhost:${config.port}`);
 });
+
+//supertest
+export default app;

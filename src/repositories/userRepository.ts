@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { IUser } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import { AtLeast } from "../misc";
 import { ReadOnlyError } from "../models/errors/generalErrors";
 import { UserAlreadyExistError } from "../models/errors/userErrors";
 
@@ -44,7 +45,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async update(newUsr: IUser): Promise<void> {
+  async update(newUsr: AtLeast<IUser, "id">): Promise<void> {
     try {
       await this.prisma.user.update({ data: newUsr, where: { id: newUsr.id } });
     } catch (e) {

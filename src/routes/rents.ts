@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import { body, query } from "express-validator";
 import { RentsController } from "../controllers/rentsController";
 import { AuthenticateMiddleware } from "../middlewares/authenticateMiddleware";
+import prisma from "../prismaInstance";
 
 const rentsRouter = Router();
-const prisma = new PrismaClient();
 const rentsController = new RentsController(prisma);
 const authMiddleware = new AuthenticateMiddleware(prisma);
 

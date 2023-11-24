@@ -3,7 +3,7 @@ import { IAdvertisementRepository } from "../../../src/interfaces/IAdvertisement
 import { IRentRepository } from "../../../src/interfaces/IRentRepository";
 import { IUserRepository } from "../../../src/interfaces/IUserRepository";
 import { AdvertisementModel } from "../../../src/models/advertisementModel";
-import { TestBuilder } from "../da/helpers";
+import { TestBuilder } from "../../helpers";
 
 describe("advertisementModel tests (mocks)", () => {
   let userRepo: MockProxy<IUserRepository>;
@@ -12,7 +12,7 @@ describe("advertisementModel tests (mocks)", () => {
 
   let _advModel: AdvertisementModel;
 
-  beforeEach(() => {
+  afterEach(() => {
     userRepo = mock<IUserRepository>();
     advRepo = mock<IAdvertisementRepository>();
     rentRepo = mock<IRentRepository>();
