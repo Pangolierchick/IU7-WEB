@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { IAdvertisement } from "../../src/interfaces/IAdvertisement";
-import { IUser } from "../../src/interfaces/IUser";
-import { AdvertisementRepository } from "../../src/repositories/advertisimentRepository";
-import { UserRepository } from "../../src/repositories/userRepository";
+import { IAdvertisement } from "../../../src/interfaces/IAdvertisement";
+import { IUser } from "../../../src/interfaces/IUser";
+import { AdvertisementRepository } from "../../../src/repositories/advertisimentRepository";
+import { UserRepository } from "../../../src/repositories/userRepository";
 import { TestBuilder } from "./helpers";
 
 const prisma: PrismaClient = new PrismaClient();
@@ -11,6 +11,10 @@ const advRepo = new AdvertisementRepository(prisma);
 
 let builder: TestBuilder;
 let user: IUser;
+
+prisma.$on("query", (e) => {
+  
+});
 
 describe("Advertisement repository unit tests", () => {
   beforeEach(async () => {

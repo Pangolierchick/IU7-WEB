@@ -1,8 +1,8 @@
 import { MockProxy, mock } from "jest-mock-extended";
-import { IAdvertisementRepository } from "../../src/interfaces/IAdvertisementRepository";
-import { IRentRepository } from "../../src/interfaces/IRentRepository";
-import { IUserRepository } from "../../src/interfaces/IUserRepository";
-import { AdvertisementModel } from "../../src/models/advertisementModel";
+import { IAdvertisementRepository } from "../../../src/interfaces/IAdvertisementRepository";
+import { IRentRepository } from "../../../src/interfaces/IRentRepository";
+import { IUserRepository } from "../../../src/interfaces/IUserRepository";
+import { AdvertisementModel } from "../../../src/models/advertisementModel";
 import { TestBuilder } from "../da/helpers";
 
 describe("advertisementModel tests (mocks)", () => {
@@ -74,5 +74,25 @@ describe("advertisementModel tests (mocks)", () => {
     );
 
     expect(advRepo.delete).toHaveBeenCalledTimes(4);
+  });
+
+  it("newRent", async () => {
+    const builder = new TestBuilder();
+    const user = builder.buildUser();
+    const user2 = builder.buildUser();
+    const ad = builder.buildAdvertisement(user.id);
+    const rent = builder.buildRent(user.id, ad.id);
+    rent.dateFrom.setFullYear(rent.dateFrom.getFullYear() + 1);
+    rent.dateUntil.setFullYear(rent.dateFrom.getFullYear() + 1);
+
+    userRepo.get.calledWith(user.id).mockResolvedValue(user);
+    advRepo.get.calledWith(ad.id).mockResolvedValue(ad);
+    rentRepo.getInDate
+      .calledWith(ad.id, rent.dateFrom, rent.dateUntil)
+      .mockResolvedValue([]);
+
+    await _advModel.newRent(rent.adId, user2.id, rent.dateFrom, rent.dateUntil);
+
+    expect(rentRepo.create).toHaveBeenCalledTimes(1);
   });
 });

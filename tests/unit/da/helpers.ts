@@ -1,6 +1,6 @@
-import { IAdvertisement } from "../../src/interfaces/IAdvertisement";
-import { IRent } from "../../src/interfaces/IRent";
-import { IUser } from "../../src/interfaces/IUser";
+import { IAdvertisement } from "../../../src/interfaces/IAdvertisement";
+import { IRent } from "../../../src/interfaces/IRent";
+import { IUser } from "../../../src/interfaces/IUser";
 
 export class TestBuilder {
   public buildString(length = 30): string {

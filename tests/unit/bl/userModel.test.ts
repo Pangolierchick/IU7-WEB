@@ -1,7 +1,7 @@
 import { MockProxy, captor, mock } from "jest-mock-extended";
-import { UserRole } from "../../src/interfaces/IUser";
-import { IUserRepository } from "../../src/interfaces/IUserRepository";
-import { userModel } from "../../src/models/userModel";
+import { UserRole } from "../../../src/interfaces/IUser";
+import { IUserRepository } from "../../../src/interfaces/IUserRepository";
+import { userModel } from "../../../src/models/userModel";
 import { TestBuilder } from "../da/helpers";
 
 describe("userModel tests (mocks)", () => {

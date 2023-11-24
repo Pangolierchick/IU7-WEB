@@ -3,7 +3,7 @@ module.exports = {
   preset: "ts-jest",
   verbose: true,
   randomize: true,
-  collectCoverage: true,
+  collectCoverage: false,
   testEnvironment: "allure-jest/node",
   testEnvironmentOptions: {
     resultsDir: "./allure-results",
