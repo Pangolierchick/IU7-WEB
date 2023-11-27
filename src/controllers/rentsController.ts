@@ -57,7 +57,7 @@ export class RentsController extends BaseController {
         new Date(from),
         new Date(to)
       );
-      res.status(201).json({ rentId });
+      res.status(201).json({ id: rentId });
     } catch (e) {
       if (
         instanseOfAny(e as any, [

@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../src/index";
+import { IUser } from "../../src/interfaces/IUser";
 import { UserModel } from "../../src/models/userModel";
 import prisma from "../../src/prismaInstance";
 import { UserRepository } from "../../src/repositories/userRepository";
@@ -8,6 +9,7 @@ import { TestBuilder } from "../helpers";
 describe("E2E test suite", () => {
   const builder = new TestBuilder();
   let adminId: string;
+  let rawusr: IUser;
   afterEach(async () => {
     await prisma.$transaction([
       prisma.rent.deleteMany(),
@@ -20,7 +22,7 @@ describe("E2E test suite", () => {
     const usrRepo = new UserRepository(prisma);
     const usrModel = new UserModel(usrRepo);
 
-    const rawusr = builder.buildUser();
+    rawusr = builder.buildUser();
     adminId = await usrModel.addAdmin(rawusr.login, rawusr.password);
   });
 
@@ -59,6 +61,40 @@ describe("E2E test suite", () => {
     expect(advRes.statusCode).toBe(201);
     const adId = JSON.parse(advRes.text).id;
     expect(adId).toBeDefined();
+
+    const adminAuth = await request(app)
+      .get(`/api/v1/auth`)
+      .query({ login: rawusr.login })
+      .query({ password: rawusr.password })
+      .send();
+
+    expect(adminAuth.statusCode).toBe(200);
+    const adminToken = JSON.parse(adminAuth.text).token;
+    expect(adminToken).toBeDefined();
+
+    const advApprove = await request(app)
+      .patch("/api/v1/listings")
+      .auth(adminToken, { type: "bearer" })
+      .query({ id: adId })
+      .send({ isApproved: true });
+
+    expect(advApprove.statusCode).toBe(200);
+    expect(JSON.parse(advApprove.text).advertisement.isApproved).toBe(true);
+
+    const from = new Date();
+    from.setFullYear(from.getFullYear() + 1);
+    const to = new Date();
+    to.setFullYear(to.getFullYear() + 1);
+    to.setMonth(to.getMonth() + 1);
+
+    const rentRes = await request(app)
+      .post("/api/v1/rents")
+      .auth(adminToken, { type: "bearer" })
+      .query({ adId })
+      .send({ from: from.toISOString(), to: to.toISOString() });
+
+    expect(rentRes.statusCode).toBe(201);
+    expect(JSON.parse(rentRes.text).id).toBeDefined();
   });
 
   afterAll(() => {

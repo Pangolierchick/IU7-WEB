@@ -1,0 +1,55 @@
+variables:
+  DATABASE_URL: postgresql://prisma:prisma@postgres:5432/tests
+  POSTGRES_USER: prisma
+  POSTGRES_PASSWORD: prisma
+  POSTGRES_DB: tests
+
+stages:
+  - build
+  - setup
+  - unit
+  - integration
+  - e2e
+
+test:unit:
+  stage: unit
+  image: node:latest
+  services:
+    - name: postgres:13
+      alias: postgres
+  tags:
+    - docker
+  script:
+    - yarn install --no-progress
+    - yarn prisma migrate deploy
+    - yarn test:unit
+
+test:int:
+  stage: integration
+  image: node:latest
+  services:
+    - name: postgres:13
+      alias: postgres
+  tags:
+    - docker
+  script:
+    - yarn install --no-progress
+    - yarn prisma migrate deploy
+    - yarn test:int
+  dependencies:
+    - test:unit
+
+test:e2e:
+  stage: e2e
+  image: node:latest
+  services:
+    - name: postgres:13
+      alias: postgres
+  tags:
+    - docker
+  script:
+    - yarn install --no-progress
+    - yarn prisma migrate deploy
+    - yarn test:e2e
+  dependencies:
+    - test:int

@@ -17,7 +17,7 @@ rentsRouter.get(
 rentsRouter.post(
   "/",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
-  body(["from", "to"]).isDate(),
+  body(["from", "to"]).isISO8601().toDate(),
   query(["adId"]).isUUID(),
   rentsController.post.bind(rentsController)
 );

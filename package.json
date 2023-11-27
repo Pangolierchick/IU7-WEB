@@ -44,11 +44,11 @@
     "docker:down": "docker-compose down",
     "docker:dummy-db:up": "docker compose up dummy-db --build -d",
     "docker:dummy-db:down": "docker compose down dummy-db",
-    "docker:dummy-db:migrate": "dotenv -e .env.test -- yarn prisma migrate deploy",
-    "test": "dotenv -e .env.test -- jest",
-    "test:unit": "dotenv -e .env.test -- jest tests/unit",
-    "test:int": "dotenv -e .env.test -- jest tests/integration",
-    "test:e2e": "dotenv -e .env.test -- jest tests/e2e --forceExit",
+    "docker:dummy-db:migrate": "yarn prisma migrate deploy",
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:int": "jest tests/integration",
+    "test:e2e": "jest tests/e2e --forceExit",
     "allure": "allure serve ./allure-results"
   },
   "dependencies": {
