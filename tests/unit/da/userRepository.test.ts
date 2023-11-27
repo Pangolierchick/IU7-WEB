@@ -15,7 +15,7 @@ describe("User repository unit tests", () => {
 
     expect(await userRepo.get(user.id)).toStrictEqual({
       ...user,
-      scoreCount: 0,
+      scoreCount: 1,
     });
   });
 
@@ -42,7 +42,7 @@ describe("User repository unit tests", () => {
 
     expect(await userRepo.get(user.id)).toStrictEqual({
       ...newUser,
-      scoreCount: 0,
+      scoreCount: 1,
     });
   });
 
@@ -53,7 +53,7 @@ describe("User repository unit tests", () => {
 
     const actual = await userRepo.getWithFilter({ login: user.login });
 
-    expect(actual).toStrictEqual([{ ...user, scoreCount: 0 }]);
+    expect(actual).toStrictEqual([{ ...user, scoreCount: 1 }]);
   });
 
   test("getByLogin", async () => {
@@ -63,6 +63,6 @@ describe("User repository unit tests", () => {
 
     const actual = await userRepo.getByLogin(user.login);
 
-    expect(actual).toStrictEqual({ ...user, scoreCount: 0 });
+    expect(actual).toStrictEqual({ ...user, scoreCount: 1 });
   });
 });

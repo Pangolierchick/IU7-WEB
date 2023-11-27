@@ -1,5 +1,5 @@
 import { UserRole } from "../../src/interfaces/IUser";
-import { userModel } from "../../src/models/userModel";
+import { UserModel } from "../../src/models/userModel";
 import prisma from "../../src/prismaInstance";
 import { UserRepository } from "../../src/repositories/userRepository";
 import { TestBuilder } from "../helpers";
@@ -7,10 +7,10 @@ import { TestBuilder } from "../helpers";
 const userRepo = new UserRepository(prisma);
 const builder = new TestBuilder();
 
-const usrModel = new userModel(userRepo);
+const usrModel = new UserModel(userRepo);
 
 describe("Users tests", () => {
-  afterEach(async () => {
+  beforeAll(async () => {
     await prisma.$transaction([
       prisma.rent.deleteMany(),
       prisma.advertisement.deleteMany(),

@@ -12,7 +12,7 @@ let builder: TestBuilder;
 let user: IUser;
 
 describe("Advertisement repository unit tests", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     builder = new TestBuilder();
 
     user = builder.buildUser();

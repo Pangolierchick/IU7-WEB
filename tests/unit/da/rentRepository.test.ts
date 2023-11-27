@@ -15,7 +15,7 @@ let user: IUser;
 let ad: IAdvertisement;
 
 describe("Rent repository unit tests", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     builder = new TestBuilder();
 
     user = builder.buildUser();

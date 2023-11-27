@@ -48,6 +48,7 @@ export class AuthController extends BaseController {
       if (e instanceof WrongPasswordOrLoginError) {
         res.status(400).json({ errors: e.message });
       } else {
+        console.log((e as Error).message);
         res.status(500).json({ errors: (e as Error).message });
       }
     }

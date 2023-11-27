@@ -3,6 +3,7 @@ variables:
   POSTGRES_USER: prisma
   POSTGRES_PASSWORD: prisma
   POSTGRES_DB: tests
+  SECRET_KEY: 3c61a32bd38e0727dab133c19c266bb412b4ddf12a80f2efba805b6f7aff59f13a4e513a0d3a76ac2164280f93566871f9091feda4aedf2b7daf770eb3597207
 
 stages:
   - build

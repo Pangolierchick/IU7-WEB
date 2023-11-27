@@ -12,7 +12,7 @@ describe("advertisementModel tests (mocks)", () => {
 
   let _advModel: AdvertisementModel;
 
-  afterEach(() => {
+  beforeEach(() => {
     userRepo = mock<IUserRepository>();
     advRepo = mock<IAdvertisementRepository>();
     rentRepo = mock<IRentRepository>();

@@ -1,5 +1,5 @@
 import { AdvertisementModel } from "../../src/models/advertisementModel";
-import { userModel } from "../../src/models/userModel";
+import { UserModel } from "../../src/models/userModel";
 import prisma from "../../src/prismaInstance";
 import { AdvertisementRepository } from "../../src/repositories/advertisimentRepository";
 import { RentRepository } from "../../src/repositories/rentRepository";
@@ -11,11 +11,11 @@ const adRepo = new AdvertisementRepository(prisma);
 const rentRepo = new RentRepository(prisma);
 const builder = new TestBuilder();
 
-const usrModel = new userModel(userRepo);
+const usrModel = new UserModel(userRepo);
 const adModel = new AdvertisementModel(adRepo, userRepo, rentRepo);
 
 describe("Advertisements tests", () => {
-  afterEach(async () => {
+  beforeAll(async () => {
     await prisma.$transaction([
       prisma.rent.deleteMany(),
       prisma.advertisement.deleteMany(),
