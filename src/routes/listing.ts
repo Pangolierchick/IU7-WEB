@@ -1,22 +1,20 @@
-import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
-import { body, query } from "express-validator";
+import { body, param } from "express-validator";
 import ListingController from "../controllers/listingController";
 import { AuthenticateMiddleware } from "../middlewares/authenticateMiddleware";
 import prisma from "../prismaInstance";
 
-const listingRouter = Router();
+const listingsRouter = Router();
 const listingController = new ListingController(prisma);
 const authMiddleware = new AuthenticateMiddleware(prisma);
 
-listingRouter.get(
-  "/",
-  query(["id", "ownerId"]).optional().isUUID().trim().escape(),
-  query("rentDates").optional().isBoolean(),
+listingsRouter.get(
+  "/:id",
+  param("id").isUUID().trim().escape(),
   listingController.get.bind(listingController)
 );
 
-listingRouter.post(
+listingsRouter.post(
   "/",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
   body(["address", "description"]).notEmpty().trim().escape(),
@@ -24,21 +22,21 @@ listingRouter.post(
   listingController.post.bind(listingController)
 );
 
-listingRouter.patch(
-  "/",
+listingsRouter.patch(
+  "/:id",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
-  query("id").exists().isUUID(),
+  param("id").exists().isUUID(),
   body(["cost", "score"]).optional().isNumeric(),
   body(["address", "description"]).optional().notEmpty().trim().escape(),
   body("isApproved").optional().isBoolean(),
   listingController.patch.bind(listingController)
 );
 
-listingRouter.delete(
-  "/",
+listingsRouter.delete(
+  "/:id",
   authMiddleware.authenticateMiddleware.bind(authMiddleware),
-  query("id").toArray().isUUID(),
+  param("id").isUUID(),
   listingController.delete.bind(listingController)
 );
 
-export default listingRouter;
+export default listingsRouter;

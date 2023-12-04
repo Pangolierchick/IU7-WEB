@@ -33,7 +33,7 @@ class ListingController extends BaseController {
   }
 
   @Validate
-  public async get(req: Request, res: Response) {
+  public async getMany(req: Request, res: Response) {
     const { id, ownerId, rentDates } = matchedData(req);
 
     try {
@@ -42,10 +42,26 @@ class ListingController extends BaseController {
         ownerId,
       });
 
-      if (advs.length === 0) {
-        res.status(400).json({ advertisements: [] });
+      res.status(200).json({ advertisements: advs });
+    } catch (e) {
+      res.status(500).json({ error: "server error" });
+    }
+  }
+
+  @Validate
+  public async get(req: Request, res: Response) {
+    const { id } = matchedData(req);
+
+    try {
+      const advs = await this._advManager.getAdvertisementsWithFilter({
+        id,
+      });
+
+      if (advs.length != 1) {
+        const err = new AdvertisementNotFound(id);
+        res.status(404).json({ error: err.message });
       } else {
-        res.status(200).json({ advertisements: advs });
+        res.status(200).json({ id: advs[0] });
       }
     } catch (e) {
       res.status(500).json({ error: "server error" });
@@ -117,9 +133,9 @@ class ListingController extends BaseController {
     const userId = req.body.userId;
 
     try {
-      await this._advManager.deleteAdvertisements(userId, id);
+      await this._advManager.deleteAdvertisements(userId, [id]);
 
-      res.status(204);
+      res.status(204).json({});
     } catch (e) {
       if (
         instanseOfAny(e as any, [

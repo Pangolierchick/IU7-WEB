@@ -9,6 +9,7 @@ import {
   AdvertisementNotFound,
   OwnerRentError,
   RentDateError,
+  RentNotFound,
 } from "../models/errors/advertisementErrors";
 import { ReadOnlyError } from "../models/errors/generalErrors";
 import { UserNotFound } from "../models/errors/userErrors";
@@ -33,15 +34,27 @@ export class RentsController extends BaseController {
     this._userManager = new UserModel(_userRepo);
   }
   @Validate
-  public async get(req: Request, res: Response) {
+  public async getMany(req: Request, res: Response) {
     const { adId, userId } = matchedData(req);
 
     const rents = await this._advManager.getRents({ adId, userId });
+    res.status(200).json({ rents });
+  }
 
-    if (rents.length === 0) {
-      res.status(400).json({ rents: [] });
-    } else {
-      res.status(200).json({ rents });
+  @Validate
+  public async get(req: Request, res: Response) {
+    const { id } = matchedData(req);
+
+    try {
+      const rent = await this._advManager.getRent(id);
+
+      res.status(200).json(rent);
+    } catch (e) {
+      if (e instanceof RentNotFound) {
+        res.status(400).json({ error: e.message });
+      } else {
+        res.status(500).json({ error: (e as Error).message });
+      }
     }
   }
 

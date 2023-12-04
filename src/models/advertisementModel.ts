@@ -13,6 +13,7 @@ import {
   AdvertisementRightsError,
   OwnerRentError,
   RentDateError,
+  RentNotFound,
   UpdateAdvertisementRightsError,
 } from "./errors/advertisementErrors";
 import { UserIsNotAdminError, UserNotFound } from "./errors/userErrors";
@@ -49,6 +50,16 @@ export class AdvertisementModel {
     }
 
     return ad;
+  }
+
+  public async getRent(id: string) {
+    const rent = await this._rentRepository.get(id);
+
+    if (!rent) {
+      throw new RentNotFound();
+    }
+
+    return rent;
   }
 
   public async deleteAdvertisements(userId: string, ids: string[]) {
@@ -89,7 +100,7 @@ export class AdvertisementModel {
       throw new UserIsNotAdminError(ad.id);
     }
 
-    if (user.role === UserRole.Admin || adv.ownerId === ad.ownerId) {
+    if (user.role === UserRole.Admin || adv.ownerId === userId) {
       await this._advertisimentRepository.update(ad);
       return await this.getAdvertisement(ad.id);
     }

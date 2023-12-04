@@ -12,6 +12,13 @@ export class RentDateError extends Error {
   }
 }
 
+export class RentNotFound extends Error {
+  constructor() {
+    super("Rent not found");
+    this.name = "RentNotFound";
+  }
+}
+
 export class OwnerRentError extends Error {
   constructor() {
     super("Owner cant rent own advertisement");
