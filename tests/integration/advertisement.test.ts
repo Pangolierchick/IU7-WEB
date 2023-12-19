@@ -15,14 +15,6 @@ const usrModel = new UserModel(userRepo);
 const adModel = new AdvertisementModel(adRepo, userRepo, rentRepo);
 
 describe("Advertisements tests", () => {
-  beforeAll(async () => {
-    await prisma.$transaction([
-      prisma.rent.deleteMany(),
-      prisma.advertisement.deleteMany(),
-      prisma.user.deleteMany(),
-    ]);
-  });
-
   test("Create advertisement", async () => {
     const userId = await usrModel.addUser(
       builder.buildString(),

@@ -10,13 +10,6 @@ describe("E2E test suite", () => {
   const builder = new TestBuilder();
   let adminId: string;
   let rawusr: IUser;
-  afterEach(async () => {
-    await prisma.$transaction([
-      prisma.rent.deleteMany(),
-      prisma.advertisement.deleteMany(),
-      prisma.user.deleteMany(),
-    ]);
-  });
 
   beforeEach(async () => {
     const usrRepo = new UserRepository(prisma);

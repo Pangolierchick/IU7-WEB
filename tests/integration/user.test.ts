@@ -10,13 +10,6 @@ const builder = new TestBuilder();
 const usrModel = new UserModel(userRepo);
 
 describe("Users tests", () => {
-  beforeAll(async () => {
-    await prisma.$transaction([
-      prisma.rent.deleteMany(),
-      prisma.advertisement.deleteMany(),
-      prisma.user.deleteMany(),
-    ]);
-  });
   it("create & get user", async () => {
     const userId = await usrModel.addUser(
       builder.buildString(),
