@@ -61,7 +61,7 @@ class ListingController extends BaseController {
         const err = new AdvertisementNotFound(id);
         res.status(404).json({ error: err.message });
       } else {
-        res.status(200).json({ id: advs[0] });
+        res.status(200).json({ advertisement: advs[0] });
       }
     } catch (e) {
       res.status(500).json({ error: "server error" });
