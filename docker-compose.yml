@@ -6,13 +6,27 @@ services:
   dummy-db:
     image: postgres:13
     restart: always
-    container_name: tests-dummy-db
-    ports:
-      - "5433:5432"
+    container_name: dummy-db
+    networks:
+      - postgres_network
     environment:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: prisma
       POSTGRES_DB: tests
+  dummy-mysql:
+    image: mysql
+    container_name: dummy-mysql
+    restart: always
+    networks:
+      - postgres_network
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: prisma
+      MYSQL_DATABASE: web
+      MYSQL_USER: prisma
+      MYSQL_PASSWORD: prisma
+
   webapp:
     restart: unless-stopped
     depends_on:
@@ -28,6 +42,22 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL_DOCKER}
       - SECRET_KEY=${SECRET_KEY}
+
+  bench_pg:
+    build:
+      dockerfile: ./Dockerfile.benchPg
+    networks:
+      - postgres_network
+    volumes:
+      - ./benchmark_pg:/usr/src/app/benchmarkDocs
+
+  bench_mysql:
+    build:
+      dockerfile: ./Dockerfile.benchMs
+    networks:
+      - postgres_network
+    volumes:
+      - ./benchmark_mysql:/usr/src/app/benchmarkDocs
 
   webapp_mirror:
     restart: unless-stopped

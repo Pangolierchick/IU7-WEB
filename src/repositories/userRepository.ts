@@ -32,7 +32,7 @@ export class UserRepository implements IUserRepository {
           throw new UserAlreadyExistError();
         }
       }
-
+      console.log(e);
       throw new Error("Failed to create new user");
     }
   }

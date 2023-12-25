@@ -44,15 +44,19 @@
     "docker:down": "docker-compose down",
     "docker:dummy-db:up": "docker compose up dummy-db --build -d",
     "docker:dummy-db:down": "docker compose down dummy-db",
-    "docker:dummy-db:migrate": "yarn prisma migrate deploy",
+    "docker:dummy-db:migrate": "dotenv -e .env.test -- yarn prisma migrate deploy",
+    "docker:mysql:migrate": "dotenv -e .env.mysql -- yarn prisma migrate deploy",
     "test": "jest",
     "test:unit": "jest tests/unit",
     "test:int": "jest tests/integration",
     "test:e2e": "jest tests/e2e --forceExit",
+    "bench:pg": "yarn prisma generate && yarn prisma db push && yarn run build && node ./build/benchmarks/pgBenchmark.js",
+    "bench:mysql": "yarn prisma generate && yarn prisma db push && yarn run build && node ./build/benchmarks/pgBenchmark.js",
     "allure": "allure serve ./allure-results"
   },
   "dependencies": {
     "@prisma/client": "5.5.2",
+    "@types/node-os-utils": "^1.3.4",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -64,6 +68,7 @@
     "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "node-fetch": "2.6.1",
+    "node-os-utils": "^1.3.7",
     "pg": "^8.10.0",
     "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.0"
