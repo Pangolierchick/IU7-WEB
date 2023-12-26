@@ -20,8 +20,8 @@ export class AuthController extends BaseController {
     const { login, password } = matchedData(req);
 
     try {
-      const token = await this._userManager.loginUser(login, password);
-      res.status(200).json({ token });
+      const [id, token] = await this._userManager.loginUser(login, password);
+      res.status(200).json({ id, token });
     } catch (e) {
       if (e instanceof WrongPasswordOrLoginError) {
         res.status(400).json({ errors: e.message });

@@ -71,6 +71,9 @@ export class AdvertisementRepository implements IAdvertisementRepository {
   async getWithFilter(
     filter: Partial<IAdvertisement>
   ): Promise<IAdvertisement[]> {
-    return await this.prisma.advertisement.findMany({ where: { ...filter } });
+    return await this.prisma.advertisement.findMany({
+      where: { ...filter },
+      include: { user: true },
+    });
   }
 }

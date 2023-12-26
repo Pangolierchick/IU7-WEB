@@ -1,25 +1,43 @@
 "use client";
 import { auth } from "@/services/auth";
-import { Box, Button, TextField } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, TextField } from "@mui/material";
+import { isAxiosError } from "axios";
 import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import PageContext from "../context";
 
 export default function Login() {
+  const navContext = useContext(PageContext);
   const router = useRouter();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [showAllert, setShowAllert] = useState("");
 
-  const handleLogin = (e: any) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     auth(login, password)
-      .then((d) => {
-        console.log(d);
-        setCookie("token", d, { secure: true });
+      .then((data) => {
+        const [id, token] = data;
+        setCookie("token", token, { secure: true });
+        setCookie("id", id);
+
+        if (navContext) {
+          navContext(true);
+        }
+
         router.push("/");
       })
       .catch((e) => {
-        console.log(e);
+        if (isAxiosError(e)) {
+          if (e.response) {
+            if (e.response.status === 400) {
+              setShowAllert("Введен неправильный логин или пароль");
+            }
+          } else {
+            setShowAllert("Ошибка сервера, повторите позже");
+          }
+        }
       });
   };
 
@@ -27,11 +45,6 @@ export default function Login() {
     <Box
       sx={{
         backgroundColor: "#ffffff",
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        marginRight: "-50%",
-        transform: "translate(-50%, -50%)",
         borderRadius: "12px",
         boxShadow: "-1px 1px 10px 0px rgba(0, 0, 0, 0.15)",
       }}
@@ -48,10 +61,12 @@ export default function Login() {
         }}
       >
         <TextField
+          required
           label="Логин"
           onChange={(e) => setLogin(e.target.value)}
         ></TextField>
         <TextField
+          required
           label="Пароль"
           type="password"
           onChange={(e) => setPassword(e.target.value)}
@@ -60,10 +75,18 @@ export default function Login() {
           type="submit"
           variant="contained"
           size="large"
-          sx={{ backgroundColor: "#116a7b", borderRadius: "12px" }}
+          sx={{ borderRadius: "12px" }}
         >
           Отправить
         </Button>
+
+        <Alert
+          severity="error"
+          sx={{ display: showAllert === "" ? "none" : "" }}
+        >
+          <AlertTitle>Ошибка</AlertTitle>
+          {showAllert}
+        </Alert>
       </Box>
     </Box>
   );

@@ -1,15 +1,11 @@
 "use client";
 import { deleteCookie, getCookie } from "cookies-next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import style from "./navbar.module.css";
 
-const Navbar = () => {
-  const [isLogged, setLogged] = useState(false);
-
-  useEffect(() => {
-    setLogged(getCookie("token") !== undefined);
-  });
+const Navbar = ({ isLogged }: { isLogged: boolean }) => {
+  const router = useRouter();
 
   if (!isLogged) {
     return (
@@ -48,7 +44,7 @@ const Navbar = () => {
         <div className={style.marginLeft}>
           <Link
             style={{ textDecoration: "none", color: "#000000" }}
-            href="/signup"
+            href="/advertisements"
           >
             Добавить объявление
           </Link>
@@ -56,7 +52,7 @@ const Navbar = () => {
         <div>
           <Link
             style={{ textDecoration: "none", color: "#000000" }}
-            href="/signup"
+            href={`/users/${getCookie("id")}`}
           >
             Профиль
           </Link>
@@ -64,7 +60,8 @@ const Navbar = () => {
         <div
           onClick={(e) => {
             deleteCookie("token");
-            setLogged(false);
+            deleteCookie("id");
+            router.refresh();
           }}
         >
           <Link style={{ textDecoration: "none", color: "#000000" }} href="/">

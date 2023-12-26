@@ -21,6 +21,7 @@ export default function Advertisement({
         backgroundColor: "#ffffff",
         display: "flex",
         flexDirection: "column",
+        minWidth: "300px",
         gap: "20px",
         padding: "40px",
       }}

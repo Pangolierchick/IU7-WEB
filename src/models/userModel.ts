@@ -110,7 +110,7 @@ export class UserModel {
       expiresIn: "8h",
     });
 
-    return token;
+    return [user.id, token];
   }
 
   public async authenticateUser(token: string) {

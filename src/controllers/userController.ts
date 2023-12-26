@@ -40,11 +40,12 @@ export class UserController extends BaseController {
 
     try {
       const users = await this._userManager.getUsersWithFilters({ id, login });
-
-      if (users.length === 0) {
-        res.status(400).json({ users: [] });
-      } else {
+      if (users.length === 1) {
+        res.status(200).json({ user: users[0] });
+      } else if (users.length > 1) {
         res.status(200).json({ users });
+      } else {
+        res.status(400);
       }
     } catch (e) {
       res.status(500).json({ error: "server error" });
